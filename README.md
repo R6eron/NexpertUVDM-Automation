@@ -1,3 +1,9 @@
+Quickstart: "pip install ccxt" > Run python xlm_monitor.py > Customize API keys for Nexo/MEXC/BIFROST.
+Full Code: Upload the manuscript's sample script (pg. 92) as xlm_price_checker.py.
+Demo: GIF/screenshot of a simulated run (e.g., alerting at $1 XLM trigger
+uvdm_steps.py: Implement the 8-step harvesting table (pg. 28-29) as a function that simulates swaps (e.g., input: 108K XLM; output: yield projections to $60K).
+.gitignore: Exclude API keys/secrets.
+
 # Nexpert/UVDM-UVDM-Automation-
 This automation reduces human error, saves time, and ensures consistent execution of the UVDM’s virtuous cycles. Below, I outline the script’s core components and provide pseudocode for key processes to make the UVDM accessible to readers with basic programming knowledge.
 MIT License
