@@ -67,7 +67,41 @@ from xrpl.wallet import Wallet
 from xrpl.models.transactions import Payment
 from xrpl.transaction import safe_sign_and_submit_transaction
 from flareio import FlareApiClient  # pip install flareio (from GitHub: Flared/python-flareio)
+# xrpl_script.py
+from xrpl.clients import JsonRpcClient
+from xrpl.models.requests import ServerInfo
+import websocket
+import logging
 
+# Insert the connect_to_xrpl function here
+def connect_to_xrpl(url="wss://s1.ripple.com:443", timeout=10):
+    # ... (the full function from above)
+
+# Example function using the XRPL client
+def get_account_info(client, account):
+    from xrpl.models.requests import AccountInfo
+    try:
+        response = client.request(AccountInfo(account=account))
+        if response.is_successful():
+            return response.result
+        else:
+            logging.error(f"Failed to get account info: {response.status}")
+            return None
+    except Exception as e:
+        logging.error(f"Error fetching account info: {str(e)}")
+        return None
+
+if __name__ == "__main__":
+    client = connect_to_xrpl()
+    if client:
+        # Example: Fetch account info for a sample XRPL address
+        account_info = get_account_info(client, "rYourAccountAddressHere")
+        if account_info:
+            print(f"Account info: {account_info}")
+        else:
+            print("Failed to fetch account info.")
+    else:
+        print("Failed to connect to XRPL.")
 # User Input for API Keys/Secrets (prompt at runtime)
 def get_api_credentials():
     print("Enter your API credentials (keep secure!):")
