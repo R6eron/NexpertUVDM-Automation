@@ -9,6 +9,47 @@ This automation reduces human error, saves time, and ensures consistent executio
 
 ## Full Code
 - `xlm_price_checker.py`: Sample script from manuscript pg. 92 (price monitoring and alerts).
+- import ccxt
+import time
+from config import API_KEYS
+
+exchange = ccxt.nexo({
+    'apiKey': API_KEYS["nexo"]["api_key"],
+    'secret': API_KEYS["nexo"]["secret"],
+    'enableRateLimit': True
+})
+
+def check_xlm_price(harvest_price=1.0, callback=None):
+    print(f"Monitoring XLM price for harvest at ${harvest_price} and 20/30% drops...")
+    high_water_mark = harvest_price
+    while True:
+        try:
+            ticker = exchange.fetch_ticker('XLM/USD')
+            current_price = ticker['last']
+            print(f"Current XLM Price: ${current_price:.4f} at {time.ctime()}")
+            if current_price >= harvest_price and callback:
+                print(f"ALERT: XLM reached ${harvest_price}! Triggering harvest.")
+                callback(current_price, high_water_mark)
+                high_water_mark = current_price
+            drop20 = high_water_mark * 0.80  # 20% drop
+            drop30 = high_water_mark * 0.70  # 30% drop
+            if current_price <= drop20 or current_price <= drop30:
+                print(f"ALERT: 20% (${drop20:.2f}) or 30% (${drop30:.2f}) drop detected! Triggering reinvest.")
+                callback(current_price, high_water_mark, reinvest=True)
+                high_water_mark = current_price
+            time.sleep(300)
+        except ccxt.NetworkError as e:
+            print(f"Network Error: {e}. Retrying in 60s...")
+            time.sleep(60)
+        except Exception as e:
+            print(f"Error: {e}. Retrying in 60s...")
+            time.sleep(60)
+
+if __name__ == "__main__":
+    def dummy_callback(price, mark, reinvest=False):
+        action = "reinvest" if reinvest else "harvest"
+        print(f"Callback triggered at ${price:.2f} for {action}, high mark: ${mark:.2f}")
+    check_xlm_price(callback=dummy_callback)
 
 ## Demo
 - GIF/screenshot of simulated run (e.g., $1 XLM trigger alert) uploaded as `demo.gif`.
@@ -24,12 +65,100 @@ This automation reduces human error, saves time, and ensures consistent executio
   - **BIFROST**: Wallet > API > Generate Key/Secret.
   - Add to `config.py`:
     ```python
+    import ccxt
+import time
+from config import API_KEYS
+
+exchange = ccxt.nexo({
+    'apiKey': API_KEYS["nexo"]["api_key"],
+    'secret': API_KEYS["nexo"]["secret"],
+    'enableRateLimit': True
+})
+
+def check_xlm_price(harvest_price=1.0, callback=None):
+    print(f"Monitoring XLM price for harvest at ${harvest_price} and 20/30% drops...")
+    high_water_mark = harvest_price
+    while True:
+        try:
+            ticker = exchange.fetch_ticker('XLM/USD')
+            current_price = ticker['last']
+            print(f"Current XLM Price: ${current_price:.4f} at {time.ctime()}")
+            if current_price >= harvest_price and callback:
+                print(f"ALERT: XLM reached ${harvest_price}! Triggering harvest.")
+                callback(current_price, high_water_mark)
+                high_water_mark = current_price
+            drop20 = high_water_mark * 0.80  # 20% drop
+            drop30 = high_water_mark * 0.70  # 30% drop
+            if current_price <= drop20 or current_price <= drop30:
+                print(f"ALERT: 20% (${drop20:.2f}) or 30% (${drop30:.2f}) drop detected! Triggering reinvest.")
+                callback(current_price, high_water_mark, reinvest=True)
+                high_water_mark = current_price
+            time.sleep(300)
+        except ccxt.NetworkError as e:
+            print(f"Network Error: {e}. Retrying in 60s...")
+            time.sleep(60)
+        except Exception as e:
+            print(f"Error: {e}. Retrying in 60s...")
+            time.sleep(60)
+
+if __name__ == "__main__":
+    def dummy_callback(price, mark, reinvest=False):
+        action = "reinvest" if reinvest else "harvest"
+        print(f"Callback triggered at ${price:.2f} for {action}, high mark: ${mark:.2f}")
+    check_xlm_price(callback=dummy_callback)
     API_KEYS = {
         "nexo": {"api_key": "your_nexo_key", "secret": "your_nexo_secret"},
         "mexc": {"api_key": "your_mexc_key", "secret": "your_mexc_secret"},
         "bifrost": {"api_key": "your_bifrost_key", "secret": "your_bifrost_secret"},
         "xrpl_seed": "your_xrpl_seed"  # Private key equivalent
     }
+    def simulate_uvdm_steps(initial_xlm=115735, current_price=1.0, reinvest_price=None):
+    xlm_balance = initial_xlm
+    dai_balance = 0
+    paxg_balance = 0  # In ounces
+    print("UVDM 8-Step Harvesting Simulation")
+    print(f"Initial XLM: {initial_xlm:.0f} at ${current_price}")
+    print("Target | Harvest XLM | Harvest Value | DAI | PAXG (oz) | New XLM | Total Value")
+    print("-" * 70)
+
+    if current_price >= 1.0:  # Harvest trigger
+        harvest = (xlm_balance - 50000) * 0.1 if xlm_balance > 50000 else xlm_balance * 0.1
+        harvest_value = harvest * current_price
+        dai = harvest_value * 0.5
+        paxg = harvest_value * 0.5 / 2500
+        xlm_balance -= harvest
+        dai_balance += dai
+        paxg_balance += paxg
+        total_value = (xlm_balance * current_price) + dai_balance + (paxg_balance * 2500)
+        print(f"${current_price:^5} | {harvest:.0f:^10} | ${harvest_value:>10,.0f} | ${dai:>6.0f} | {paxg:>9.3f} | {xlm_balance:.0f:^8} | ${total_value:>10,.0f}")
+        print(f"Holding DAI: ${dai:.0f}, PAXG: {paxg:.3f} oz until 20/30% drop.")
+
+    if reinvest_price:  # Reinvest trigger
+        reinvest_amount = (dai_balance + paxg_balance * 2500) * 0.5  # 50% of held value
+        reinvest_xlm = reinvest_amount / reinvest_price
+        xlm_balance += reinvest_xlm
+        dai_balance *= 0.5
+        paxg_balance *= 0.5
+        total_value = (xlm_balance * reinvest_price) + dai_balance + (paxg_balance * 2500)
+        print(f"Reinvest at ${reinvest_price:^5} | New XLM: {reinvest_xlm:.0f} | Total XLM: {xlm_balance:.0f} | Total Value: ${total_value:,.0f}")
+
+    for target in [2, 3, 4, 5, 6, 7, 8]:
+        harvest = xlm_balance * 0.1
+        harvest_value = harvest * target
+        dai = harvest_value * 0.5
+        paxg = harvest_value * 0.5 / 2500
+        xlm_balance -= harvest
+        dai_balance += dai
+        paxg_balance += paxg
+        total_value = (xlm_balance * target) + dai_balance + (paxg_balance * 2500)
+        print(f"${target:^5} | {harvest:.0f:^10} | ${harvest_value:>10,.0f} | ${dai:>6.0f} | {paxg:>9.3f} | {xlm_balance:.0f:^8} | ${total_value:>10,.0f}")
+
+    yield_projection = (xlm_balance * 8 + dai_balance + paxg_balance * 2500) * 0.11
+    print("\nFinal XLM: {:.0f}, Total Value at $8: ${:,.2f}")
+    print(f"Projected Annual Yield (11% APY): ${yield_projection:,.2f} (targets $60K)")
+
+if __name__ == "__main__":
+    simulate_uvdm_steps()
     ```
 - **Dependencies**: Run `pip install ccxt requests substrate-interface xrpl-py flareio` in terminal.
 
@@ -44,6 +173,166 @@ This automation reduces human error, saves time, and ensures consistent executio
     ```
 - `place_mexc_order(price, amount)`:
   - **Pseudocode**:
+  - def simulate_uvdm_steps(initial_xlm=115735, current_price=1.0, reinvest_price=None):
+    xlm_balance = initial_xlm
+    dai_balance = 0
+    paxg_balance = 0  # In ounces
+    print("UVDM 8-Step Harvesting Simulation")
+    print(f"Initial XLM: {initial_xlm:.0f} at ${current_price}")
+    print("Target | Harvest XLM | Harvest Value | DAI | PAXG (oz) | New XLM | Total Value")
+    print("-" * 70)
+
+    if current_price >= 1.0:  # Harvest trigger
+        harvest = (xlm_balance - 50000) * 0.1 if xlm_balance > 50000 else xlm_balance * 0.1
+        harvest_value = harvest * current_price
+        dai = harvest_value * 0.5
+        paxg = harvest_value * 0.5 / 2500
+        xlm_balance -= harvest
+        dai_balance += dai
+        paxg_balance += paxg
+        total_value = (xlm_balance * current_price) + dai_balance + (paxg_balance * 2500)
+        print(f"${current_price:^5} | {harvest:.0f:^10} | ${harvest_value:>10,.0f} | ${dai:>6.0f} | {paxg:>9.3f} | {xlm_balance:.0f:^8} | ${total_value:>10,.0f}")
+        print(f"Holding DAI: ${dai:.0f}, PAXG: {paxg:.3f} oz until 20/30% drop.")
+
+    if reinvest_price:  # Reinvest trigger
+        reinvest_amount = (dai_balance + paxg_balance * 2500) * 0.5  # 50% of held value
+        reinvest_xlm = reinvest_amount / reinvest_price
+        xlm_balance += reinvest_xlm
+        dai_balance *= 0.5
+        paxg_balance *= 0.5
+        total_value = (xlm_balance * reinvest_price) + dai_balance + (paxg_balance * 2500)
+        print(f"Reinvest at ${reinvest_price:^5} | New XLM: {reinvest_xlm:.0f} | Total XLM: {xlm_balance:.0f} | Total Value: ${total_value:,.0f}")
+
+    for target in [2, 3, 4, 5, 6, 7, 8]:
+        harvest = xlm_balance * 0.1
+        harvest_value = harvest * target
+        dai = harvest_value * 0.5
+        paxg = harvest_value * 0.5 / 2500
+        xlm_balance -= harvest
+        dai_balance += dai
+        paxg_balance += paxg
+        total_value = (xlm_balance * target) + dai_balance + (paxg_balance * 2500)
+        print(f"${target:^5} | {harvest:.0f:^10} | ${harvest_value:>10,.0f} | ${dai:>6.0f} | {paxg:>9.3f} | {xlm_balance:.0f:^8} | ${total_value:>10,.0f}")
+
+    yield_projection = (xlm_balance * 8 + dai_balance + paxg_balance * 2500) * 0.11
+    print("\nFinal XLM: {:.0f}, Total Value at $8: ${:,.2f}")
+    print(f"Projected Annual Yield (11% APY): ${yield_projection:,.2f} (targets $60K)")
+
+if __name__ == "__main__":
+    simulate_uvdm_steps()
+    import requests
+import time
+import hmac
+import hashlib
+from xrpl.clients import JsonRpcClient
+from xrpl.wallet import Wallet
+from xrpl.models.transactions import Payment
+from xrpl.transaction import safe_sign_and_submit_transaction
+from flareio import FlareApiClient
+from config import API_KEYS
+
+def connect_to_xrpl(url="https://s1.ripple.com:51234", timeout=10):
+    try:
+        client = JsonRpcClient(url)
+        info = client.request(ServerInfo())
+        return client if info.is_successful() else None
+    except Exception as e:
+        print(f"XRPL Error: {e}")
+        return None
+
+def get_nexo_balance():
+    url = "https://api.nexo.com/v1/balances"
+    headers = {"X-API-KEY": API_KEYS["nexo"]["api_key"], "Content-Type": "application/json"}
+    try:
+        response = requests.get(url, headers=headers, timeout=10)
+        response.raise_for_status()
+        balances = response.json()
+        return next((b['available'] for b in balances if b['currency'] == 'XLM'), 0)
+    except Exception as e:
+        print(f"Nexo Error: {e}")
+        return 0
+
+def place_mexc_order(symbol, side, quantity, price):
+    base_url = "https://api.mexc.com"
+    endpoint = "/api/v3/order"
+    timestamp = int(time.time() * 1000)
+    params = {"symbol": symbol, "side": side, "type": "LIMIT", "quantity": quantity, "price": price, "timestamp": timestamp, "recvWindow": 5000}
+    query_string = "&".join([f"{k}={v}" for k, v in sorted(params.items())])
+    signature = hmac.new(API_KEYS["mexc"]["secret"].encode(), query_string.encode(), hashlib.sha256).hexdigest().lower()
+    params["signature"] = signature
+    headers = {"X-MEXC-APIKEY": API_KEYS["mexc"]["api_key"], "Content-Type": "application/x-www-form-urlencoded"}
+    try:
+        response = requests.post(f"{base_url}{endpoint}", headers=headers, data=params, timeout=10)
+        response.raise_for_status()
+        return response.json()
+    except Exception as e:
+        print(f"MEXC Error: {e}")
+        return None
+
+def connect_to_flare_protocols():
+    api_key = API_KEYS.get('flare_api_key', '')
+    if not api_key:
+        print("Flare API key missing.")
+        return None
+    try:
+        return FlareApiClient(api_key=api_key)
+    except Exception as e:
+        print(f"Flare Error: {e}")
+        return None
+
+def auto_wrap_flare_tokens(amount, flare_client):
+    try:
+        response = flare_client.post("/wrap", data={"amount": amount})
+        return response.json().get("wrapped_amount", amount * 1.1)
+    except Exception as e:
+        print(f"Wrap Error: {e}")
+        return None
+
+def main_harvest(xlm_balance, current_price, high_water_mark, reinvest=False):
+    if current_price >= 1.0 and not reinvest:
+        harvest = (xlm_balance - 50000) * 0.1 if xlm_balance > 50000 else xlm_balance * 0.1
+        order = place_mexc_order("XLMUSDT", "SELL", str(harvest), str(current_price))
+        if order:
+            harvest_value = float(order.get("cummulativeQuoteQty", 0))
+            return {"xlm": xlm_balance - harvest, "dai": harvest_value * 0.5, "paxg": harvest_value * 0.5 / 2500}
+    elif reinvest:
+        drop_ratio = high_water_mark / current_price
+        if drop_ratio >= 1.25 or drop_ratio >= 1.43:  # 20% or 30% drop
+            reinvest_amount = (dai_balance + paxg_balance * 2500) * 0.5  # 50% of held value
+            order = place_mexc_order("XLMUSDT", "BUY", str(reinvest_amount / current_price), str(current_price))
+            if order:
+                reinvest_xlm = reinvest_amount / current_price
+                return {"xlm": xlm_balance + reinvest_xlm, "dai": dai_balance * 0.5, "paxg": paxg_balance * 0.5}
+    return {"xlm": xlm_balance, "dai": 0, "paxg": 0}
+
+if __name__ == "__main__":
+    xrpl_client = connect_to_xrpl()
+    xlm_balance = get_nexo_balance() or 115735
+    dai_balance = 0
+    paxg_balance = 0
+    check_xlm_price(callback=lambda price, mark, reinvest=False: [
+        setattr(globals(), 'xlm_balance', main_harvest(xlm_balance, price, mark, reinvest)["xlm"]),
+        setattr(globals(), 'dai_balance', main_harvest(xlm_balance, price, mark, reinvest)["dai"]),
+        setattr(globals(), 'paxg_balance', main_harvest(xlm_balance, price, mark, reinvest)["paxg"])
+    ])
+    from xlm_price_checker import check_xlm_price
+from uvdm_steps import simulate_uvdm_steps
+from xrpl_script import main_harvest, get_nexo_balance
+
+def run_uvdm_automation():
+    initial_xlm = get_nexo_balance() or 115735
+    print(f"Starting with XLM: {initial_xlm}")
+    check_xlm_price(callback=lambda price, mark, reinvest=False: simulate_uvdm_steps(initial_xlm, current_price=price, reinvest_price=price if reinvest else None))
+    print("UVDM cycle completed. Monitoring...")
+
+if __name__ == "__main__":
+    run_uvdm_automation()
+    config.py
+*.key
+*.secret
+__pycache__/
+*.pyc
+*.gif
     ```
     FUNCTION place_mexc_order(price, amount):
         CONNECT to MEXC API with API_KEYS["mexc"]
