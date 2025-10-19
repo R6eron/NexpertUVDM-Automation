@@ -3,18 +3,9 @@
 This automation reduces human error, saves time, and ensures consistent execution of the UVDM’s virtuous cycles. Below, I outline the script’s core components and provide pseudocode for key processes to make the UVDM accessible to readers with basic programming knowledge.
 
 ## Quickstart
-- **Install Dependencies**: `pip install ccxt requests substrate-interface xrpl-py`
+- **Install Dependencies**: `pip install ccxt requests substrate-interface xrpl-py flareio`
 - **Run Monitor**: `python xlm_monitor.py`
 - **Customize API Keys**: Edit `config.py` with Nexo, MEXC, and BIFROST API keys (see Setup Guide).
-- FUNCTION get_nexo_balance():
-    CONNECT to Nexo API with API_KEYS["nexo"]
-    REQUEST balance endpoint
-    RETURN XLM balance.
-  FUNCTION place_mexc_order(price, amount):
-    CONNECT to MEXC API with API_KEYS["mexc"]
-    SUBMIT limit order (price, amount XLM)
-    CONFIRM order ID
-    RETURN success/failure
 
 ## Full Code
 - `xlm_price_checker.py`: Sample script from manuscript pg. 92 (price monitoring and alerts).
@@ -24,23 +15,44 @@ This automation reduces human error, saves time, and ensures consistent executio
 
 ## Scripts
 - `uvdm_steps.py`: 8-step harvesting simulation (pg. 28-29) with swap projections (input: 108K XLM; output: yield to $60K).
+- `xrpl_script.py`: XRPL/Flare integration for FTSO voting and minting.
 
 ## Setup Guide
-- **API Keys**: Create in Nexo (API Management), MEXC (API Center), BIFROST (Wallet > API). Add to `config.py`:
-  ```python
-  API_KEYS = {
-      "nexo": {"api_key": "your_nexo_key", "secret": "your_nexo_secret"},
-      "mexc": {"api_key": "your_mexc_key", "secret": "your_mexc_secret"},
-      "bifrost": {"api_key": "your_bifrost_key", "secret": "your_bifrost_secret"}
-  }
-Quickstart: "pip install ccxt" > Run python xlm_monitor.py > Customize API keys for Nexo/MEXC/BIFROST.
-Full Code: Upload the manuscript's sample script (pg. 92) as xlm_price_checker.py.
-Demo: GIF/screenshot of a simulated run (e.g., alerting at $1 XLM trigger
-uvdm_steps.py: Implement the 8-step harvesting table (pg. 28-29) as a function that simulates swaps (e.g., input: 108K XLM; output: yield projections to $60K).
-.gitignore: Exclude API keys/secrets.
+- **API Keys**: 
+  - **Nexo**: API Management > Generate API Key/Secret.
+  - **MEXC**: API Center > Create API Key/Secret.
+  - **BIFROST**: Wallet > API > Generate Key/Secret.
+  - Add to `config.py`:
+    ```python
+    API_KEYS = {
+        "nexo": {"api_key": "your_nexo_key", "secret": "your_nexo_secret"},
+        "mexc": {"api_key": "your_mexc_key", "secret": "your_mexc_secret"},
+        "bifrost": {"api_key": "your_bifrost_key", "secret": "your_bifrost_secret"},
+        "xrpl_seed": "your_xrpl_seed"  # Private key equivalent
+    }
+    ```
+- **Dependencies**: Run `pip install ccxt requests substrate-interface xrpl-py flareio` in terminal.
 
-# Nexpert/UVDM-UVDM-Automation-
-This automation reduces human error, saves time, and ensures consistent execution of the UVDM’s virtuous cycles. Below, I outline the script’s core components and provide pseudocode for key processes to make the UVDM accessible to readers with basic programming knowledge.
+## Usage Examples
+- `get_nexo_balance()`:
+  - **Pseudocode**:
+    ```
+    FUNCTION get_nexo_balance():
+        CONNECT to Nexo API with API_KEYS["nexo"]
+        REQUEST balance endpoint
+        RETURN XLM balance
+    ```
+- `place_mexc_order(price, amount)`:
+  - **Pseudocode**:
+    ```
+    FUNCTION place_mexc_order(price, amount):
+        CONNECT to MEXC API with API_KEYS["mexc"]
+        SUBMIT limit order (price, amount XLM)
+        CONFIRM order ID
+        RETURN success/failure
+    ```
+
+## License
 MIT License
 
 Copyright (c) 2025 R.S. Lewis
@@ -50,36 +62,21 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-Instructions for installing dependencies (pip install requests substrate-interface xrpl-py).
-Setup guide for API keys (Nexo, MEXC, BIFROST).
-Usage examples for key functions (e.g., get_nexo_balance(), place_mexc_order()).
-Amazon.com
-UVDM B0FQ8JRJV1 ASIN
-https://www.amazon.com/dp/B0FQ8JRJV1
-Amazon.co.uk
-UVDM B0FQ8JRJV1 ASIN
-https://www.amazon.co.uk/dp/B0FQ8JRJV1
-Amazon.de
-UVDM B0FQ8JRJV1 ASIN
-https://www.amazon.de/dp/B0FQ8JRJV1
-Amazon.fr
-UVDM B0FQ8JRJV1 ASIN
-https://www.amazon.fr/dp/B0FQ8JRJV1
-Amazon.es
-UVDM B0FQ8JRJV1 ASIN
-https://www.amazon.es/dp/B0FQ8JRJV1
-Amazon.it
-UVDM B0FQ8JRJV1 ASIN
-https://www.amazon.it/dp/B0FQ8JRJV1
-Amazon.co.jp
-UVDM B0FQ8JRJV1 ASIN
-https://www.amazon.co.jp/dp/B0FQ8JRJV1
-Amazon.com.br
-UVDM B0FQ8JRJV1 ASIN
-https://www.amazon.com.br/dp/B0FQ8JRJV1
-Amazon.ca
-UVDM B0FQ8JRJV1 ASIN
-https://www.amazon.ca/dp/B0FQ8JRJV1
+
+## Purchase
+- Amazon.com: https://www.amazon.com/dp/B0FQ8JRJV1
+- Amazon.co.uk: https://www.amazon.co.uk/dp/B0FQ8JRJV1
+- Amazon.de: https://www.amazon.de/dp/B0FQ8JRJV1
+- Amazon.fr: https://www.amazon.fr/dp/B0FQ8JRJV1
+- Amazon.es: https://www.amazon.es/dp/B0FQ8JRJV1
+- Amazon.it: https://www.amazon.it/dp/B0FQ8JRJV1
+- Amazon.co.jp: https://www.amazon.co.jp/dp/B0FQ8JRJV1
+- Amazon.com.br: https://www.amazon.com.br/dp/B0FQ8JRJV1
+- Amazon.ca: https://www.amazon.ca/dp/B0FQ8JRJV1
+- Amazon.in: https://www.amazon.in/dp/B0FQ8JRJV1
+- Amazon.com.au: https://www.amazon.com.au/dp/B0FQ8JRJV1
+- Amazon.com.mx: https://www.amazon.com.mx/dp/B0FQ8JRJV1
+- Amazon.nl: https://www.amazon.nl/dp/B0FQ8JRJV1https://www.amazon.ca/dp/B0FQ8JRJV1
 Amazon.in
 UVDM B0FQ8JRJV1 ASIN
 https://www.amazon.in/dp/B0FQ8JRJV1
