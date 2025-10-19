@@ -773,6 +773,92 @@ def main():
     
     # Start price monitoring
     monitor_asset_prices()
+import matplotlib.pyplot as plt
+import numpy as np
 
+# UVDM 8.0 Class Definition
+class UVDM_8_0:
+    def __init__(self, initial_xlm, current_xlm_price, dai_amount, fee_rate=0.001, drop_percentages=[0.25, 0.30]):
+        self.initial_xlm = initial_xlm  # 109,000 XLM
+        self.current_xlm_price = current_xlm_price  # $0.321 (adjusted)
+        self.dai_amount = dai_amount    # $1,546.26
+        self.fee_rate = fee_rate        # 0.1% fee
+        self.drop_percentages = drop_percentages  # 25%, 30% drops
+        self.target_prices = [current_xlm_price * (1 - dp) for dp in drop_percentages]
+        self.portfolio_value = initial_xlm * current_xlm_price
+        self.future_prices = [0.51, 0.86, 8.0]  # Short-term, high-end, UVDM target
+
+    # Step 1: Harvest (Simulate Sale)
+    def harvest(self, sold_xlm, sell_price):
+        sale_value = sold_xlm * sell_price * (1 - self.fee_rate)
+        self.dai_amount += sale_value
+        self.initial_xlm -= sold_xlm
+        return f"Harvested {sold_xlm} XLM at ${sell_price:.2f}, gained ${sale_value:.2f} DAI"
+
+    # Step 2: Diversify (Reinvest at Percentage Drops)
+    def reinvest(self):
+        total_xlm = self.initial_xlm
+        for price in self.target_prices:
+            xlm_bought = (self.dai_amount / 2 / price) * (1 - self.fee_rate)
+            total_xlm += xlm_bought
+            print(f"Reinvested ${self.dai_amount/2:.2f} at ${price:.2f} ({(1 - price/self.current_xlm_price)*100:.1f}% drop) for {xlm_bought:.2f} XLM")
+        self.initial_xlm = total_xlm
+        self.dai_amount = 0  # All DAI reinvested
+        return total_xlm
+
+    # Step 5: Virtuous Cycles (Calculate Gains)
+    def calculate_gains(self):
+        gains = {}
+        for future_price in self.future_prices:
+            future_value = self.initial_xlm * future_price
+            gain = future_value - self.portfolio_value
+            gains[future_price] = {"value": future_value, "gain": gain, "percent": (gain / self.portfolio_value) * 100}
+        return gains
+
+    # Step 8: Compound (Simulate Long-Term Growth)
+    def compound_growth(self, years=5, annual_growth=0.2):
+        current_value = self.portfolio_value
+        for year in range(years):
+            current_value *= (1 + annual_growth)
+            print(f"Year {year+1}: ${current_value:.2f}")
+        return current_value
+
+    # Visualization
+    def plot_risk_reward(self, gains):
+        prices = list(gains.keys())
+        gain_percents = [gains[p]["percent"] for p in prices]
+        risks = [5, 10, 20]  # Low, moderate, high risk %
+
+        plt.figure(figsize=(10, 6))
+        plt.plot(prices, gain_percents, marker='o', label="Gain %")
+        for risk in risks:
+            plt.axhline(y=risk, color='r', linestyle='--', label=f"Risk {risk}%")
+        plt.xlabel("XLM Future Price ($)")
+        plt.ylabel("Gain (%)")
+        plt.title("UVDM 8.0: Gain vs. Risk with % Drops")
+        plt.legend()
+        plt.grid()
+        plt.show()
+
+# Initialize UVDM 8.0 with updated data
+uvdm = UVDM_8_0(initial_xlm=109000, current_xlm_price=0.321, dai_amount=1546.26)
+
+# Execute Steps
+print(uvdm.harvest(sold_xlm=5000, sell_price=0.335))  # Step 1
+print(f"Initial Portfolio Value: ${uvdm.portfolio_value:.2f}")
+total_xlm = uvdm.reinvest()  # Step 2 & 5
+print(f"New Total XLM: {total_xlm:.2f}")
+
+# Calculate and Display Gains
+gains = uvdm.calculate_gains()
+for price, data in gains.items():
+    print(f"Price ${price:.2f}: Value ${data['value']:,.2f}, Gain ${data['gain']:,.2f} (+{data['percent']:.1f}%)")
+
+# Compound Growth (Step 8)
+print("\nCompound Growth Simulation (20% annual):")
+uvdm.compound_growth()
+
+# Plot Risk-Reward
+uvdm.plot_risk_reward(gains)
 if __name__ == "__main__":
     main()
