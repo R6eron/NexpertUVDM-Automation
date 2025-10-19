@@ -1,32 +1,3 @@
-# NexpertUVDM-Automation
-
-This automation reduces human error, saves time, and ensures consistent execution of the UVDM’s virtuous cycles. Below, I outline the script’s core components and provide pseudocode for key processes to make the UVDM accessible to readers with basic programming knowledge.
-
-## Quickstart
-- **Install Dependencies**: `pip install ccxt requests substrate-interface xrpl-py flareio`
-- **Run Automation**: `python main.py`
-- **Customize API Keys**: Edit `config.py` with Nexo, MEXC, and BIFROST API keys (see Setup Guide).
-
-## Full Code
-- `xlm_price_checker.py`: Monitors XLM price, triggers harvest at $1, and reinvests at 20/30% drops.
-- `uvdm_steps.py`: Simulates 8-step harvesting with 20/30% drop reinvestment.
-- `xrpl_script.py`: Handles XRPL/Flare integration, Nexo balances, MEXC orders, and BIFROST staking.
-- `main.py`: Orchestrates the UVDM automation flow.
-
-## Demo
-- GIF/screenshot of simulated run (e.g., $1 harvest or 20% drop reinvest) uploaded as `demo.gif`.
-
-## Setup Guide
-- **API Keys**:
-  - **Nexo**: API Management > Generate API Key/Secret.
-  - **MEXC**: API Center > Create API Key/Secret.
-  - **BIFROST**: Wallet > API > Generate Key/Secret.
-  - Add to `config.py`:
-    ```python
-    API_KEYS = {
-        "nexo": {"api_key": "your_nexo_key", "secret": "your_nexo_secret"},
-        "mexc": {"api_key": "your_mexc_key", "secret": "your_mexc_secret"},
-        "bifrost": {"api_key": "your_bifrost_key", "secret": "your_bifrost_secret"},
         "xrpl_seed": "your_xrpl_seed"  # Private key equivalent
     }
     ```
