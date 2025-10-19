@@ -1,3 +1,38 @@
+# NexpertUVDM-Automation
+
+This automation reduces human error, saves time, and ensures consistent execution of the UVDM’s virtuous cycles. Below, I outline the script’s core components and provide pseudocode for key processes to make the UVDM accessible to readers with basic programming knowledge.
+
+## Quickstart
+- **Install Dependencies**: `pip install ccxt requests substrate-interface xrpl-py`
+- **Run Monitor**: `python xlm_monitor.py`
+- **Customize API Keys**: Edit `config.py` with Nexo, MEXC, and BIFROST API keys (see Setup Guide).
+- FUNCTION get_nexo_balance():
+    CONNECT to Nexo API with API_KEYS["nexo"]
+    REQUEST balance endpoint
+    RETURN XLM balance.
+  FUNCTION place_mexc_order(price, amount):
+    CONNECT to MEXC API with API_KEYS["mexc"]
+    SUBMIT limit order (price, amount XLM)
+    CONFIRM order ID
+    RETURN success/failure
+
+## Full Code
+- `xlm_price_checker.py`: Sample script from manuscript pg. 92 (price monitoring and alerts).
+
+## Demo
+- GIF/screenshot of simulated run (e.g., $1 XLM trigger alert) uploaded as `demo.gif`.
+
+## Scripts
+- `uvdm_steps.py`: 8-step harvesting simulation (pg. 28-29) with swap projections (input: 108K XLM; output: yield to $60K).
+
+## Setup Guide
+- **API Keys**: Create in Nexo (API Management), MEXC (API Center), BIFROST (Wallet > API). Add to `config.py`:
+  ```python
+  API_KEYS = {
+      "nexo": {"api_key": "your_nexo_key", "secret": "your_nexo_secret"},
+      "mexc": {"api_key": "your_mexc_key", "secret": "your_mexc_secret"},
+      "bifrost": {"api_key": "your_bifrost_key", "secret": "your_bifrost_secret"}
+  }
 Quickstart: "pip install ccxt" > Run python xlm_monitor.py > Customize API keys for Nexo/MEXC/BIFROST.
 Full Code: Upload the manuscript's sample script (pg. 92) as xlm_price_checker.py.
 Demo: GIF/screenshot of a simulated run (e.g., alerting at $1 XLM trigger
