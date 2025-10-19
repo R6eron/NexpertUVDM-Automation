@@ -1,4 +1,58 @@
-        "xrpl_seed": "your_xrpl_seed"  # Private key equivalent
+import ccxt
+import requests
+import time
+import hmac
+import hashlib
+from xrpl.clients import JsonRpcClient
+from xrpl.wallet import Wallet
+from xrpl.models.transactions import Payment, ServerInfo
+from xrpl.transaction import safe_sign_and_submit_transaction
+from flareio import FlareApiClient
+
+API_KEYS = {
+    "nexo": {"api_key": "your_nexo_key", "secret": "your_nexo_secret"},
+    "mexc": {"api_key": "your_mexc_key", "secret": "your_mexc_secret"},
+    "bifrost": {"api_key": "your_bifrost_key", "secret": "your_bifrost_secret"},
+    "xrpl_seed": "your_xrpl_seed"
+}
+
+exchange = ccxt.nexo({
+    'apiKey': API_KEYS["nexo"]["api_key"],
+    'secret': API_KEYS["nexo"]["secret"],
+    'enableRateLimit': True
+})
+
+xlm_balance = 115735
+dai_balance = 0
+paxg_balance = 0
+
+def connect_to_xrpl(url="https://s1.ripple.com:51234", timeout=10):
+    try:
+        client = JsonRpcClient(url)
+        info = client.request(ServerInfo())
+        return client if info.is_successful() else None
+    except:
+        print("XRPL connection error")
+        return None
+
+def get_nexo_balance():
+    url = "https://api.nexo.com/v1/balances"
+    headers = {"X-API-KEY": API_KEYS["nexo"]["api_key"], "Content-Type": "application/json"}
+    try:
+        response = requests.get(url, headers=headers, timeout=10)
+        response.raise_for_status()
+        balances = response.json()
+        return next((b['available'] for b in balances if b['currency'] == 'XLM'), 0)
+    except:
+        print("Nexo API error")
+        return 0
+
+def place_mexc_order(symbol, side, quantity, price):
+    base_url = "https://api.mexc.com"
+    endpoint = "/api/v3/order"
+    timestamp = int(time.time() * 1000)
+    params = {"symbol": symbol, "side": side, "type": "LIMIT", "quantity": quantity, "price": price, "timestamp": timestamp, "recvWindow": 5000}
+    query_string = "&".join([f"{k}={v}" for k, v in        "xrpl_seed": "your_xrpl_seed"  # Private key equivalent
     }
     ```
 - **Dependencies**: Run `pip install ccxt requests substrate-interface xrpl-py flareio` in terminal.
