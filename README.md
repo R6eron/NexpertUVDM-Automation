@@ -100,7 +100,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 - Amazon.in: https://www.amazon.in/dp/B0FQ8JRJV1
 - Amazon.com.au: https://www.amazon.com.au/dp/B0FQ8JRJV1
 - Amazon.com.mx: https://www.amazon.com.mx/dp/B0FQ8JRJV1
-- Amazon.nl: https://www.amazon.nl/dp/B0FQ8JRJV1    'enableRateLimit': True
+- Amazon.nl: https://www.amazon.nl/dp/B0FQ8JRJV1    'enabled Rate Limit': True
 })
 
 def check_xlm_price(harvest_price=1.0, callback=None):
