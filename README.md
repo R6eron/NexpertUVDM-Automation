@@ -4,19 +4,78 @@ This automation reduces human error, saves time, and ensures consistent executio
 
 ## Quickstart
 - **Install Dependencies**: `pip install ccxt requests substrate-interface xrpl-py flareio`
-- **Run Monitor**: `python xlm_monitor.py`
+- **Run Automation**: `python main.py`
 - **Customize API Keys**: Edit `config.py` with Nexo, MEXC, and BIFROST API keys (see Setup Guide).
 
 ## Full Code
-- `xlm_price_checker.py`: Sample script from manuscript pg. 92 (price monitoring and alerts).
-- import ccxt
-import time
-from config import API_KEYS
+- `xlm_price_checker.py`: Monitors XLM price, triggers harvest at $1, and reinvests at 20/30% drops.
+- `uvdm_steps.py`: Simulates 8-step harvesting with 20/30% drop reinvestment.
+- `xrpl_script.py`: Handles XRPL/Flare integration, Nexo balances, MEXC orders, and BIFROST staking.
+- `main.py`: Orchestrates the UVDM automation flow.
 
-exchange = ccxt.nexo({
-    'apiKey': API_KEYS["nexo"]["api_key"],
-    'secret': API_KEYS["nexo"]["secret"],
-    'enableRateLimit': True
+## Demo
+- GIF/screenshot of simulated run (e.g., $1 harvest or 20% drop reinvest) uploaded as `demo.gif`.
+
+## Setup Guide
+- **API Keys**:
+  - **Nexo**: API Management > Generate API Key/Secret.
+  - **MEXC**: API Center > Create API Key/Secret.
+  - **BIFROST**: Wallet > API > Generate Key/Secret.
+  - Add to `config.py`:
+    ```python
+    API_KEYS = {
+        "nexo": {"api_key": "your_nexo_key", "secret": "your_nexo_secret"},
+        "mexc": {"api_key": "your_mexc_key", "secret": "your_mexc_secret"},
+        "bifrost": {"api_key": "your_bifrost_key", "secret": "your_bifrost_secret"},
+        "xrpl_seed": "your_xrpl_seed"  # Private key equivalent
+    }
+    ```
+- **Dependencies**: Run `pip install ccxt requests substrate-interface xrpl-py flareio` in terminal.
+
+## Usage Examples
+- `get_nexo_balance()`:
+  - **Pseudocode**:
+    ```
+    FUNCTION get_nexo_balance():
+        CONNECT to Nexo API with API_KEYS["nexo"]
+        REQUEST balance endpoint
+        RETURN XLM balance
+    ```
+- `place_mexc_order(price, amount)`:
+  - **Pseudocode**:
+    ```
+    FUNCTION place_mexc_order(price, amount):
+        CONNECT to MEXC API with API_KEYS["mexc"]
+        SUBMIT limit order (price, amount XLM)
+        CONFIRM order ID
+        RETURN success/failure
+    ```
+
+## License
+MIT License
+
+Copyright (c) 2025 R.S. Lewis
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+## Purchase
+- Amazon.com: https://www.amazon.com/dp/B0FQ8JRJV1
+- Amazon.co.uk: https://www.amazon.co.uk/dp/B0FQ8JRJV1
+- Amazon.de: https://www.amazon.de/dp/B0FQ8JRJV1
+- Amazon.fr: https://www.amazon.fr/dp/B0FQ8JRJV1
+- Amazon.es: https://www.amazon.es/dp/B0FQ8JRJV1
+- Amazon.it: https://www.amazon.it/dp/B0FQ8JRJV1
+- Amazon.co.jp: https://www.amazon.co.jp/dp/B0FQ8JRJV1
+- Amazon.com.br: https://www.amazon.com.br/dp/B0FQ8JRJV1
+- Amazon.ca: https://www.amazon.ca/dp/B0FQ8JRJV1
+- Amazon.in: https://www.amazon.in/dp/B0FQ8JRJV1
+- Amazon.com.au: https://www.amazon.com.au/dp/B0FQ8JRJV1
+- Amazon.com.mx: https://www.amazon.com.mx/dp/B0FQ8JRJV1
+- Amazon.nl: https://www.amazon.nl/dp/B0FQ8JRJV1    'enableRateLimit': True
 })
 
 def check_xlm_price(harvest_price=1.0, callback=None):
