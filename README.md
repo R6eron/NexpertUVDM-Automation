@@ -229,3 +229,19 @@ def calculate_yield(price, high_mark, xlm_balance=115735, flr_balance=37042, nex
         annual_yield = (xlm_value + harvest_value + flr_yield + nex_yield) * 0.09
     print("Projected Annual Yield: " + str(annual_yield) + " (targeting $60K+)")
     return xlm_balance, flr_balance
+
+def calculate_yield(price, high_mark, xlm_balance, flr_balance=37042, nex_balance=3848, reinvest=False):
+    if reinvest:
+        reinvest_xlm = xlm_balance * 0.1 * price * 0.5
+        xlm_balance += reinvest_xlm / price
+        flr_value = flr_balance * 0.02054 * 0.05
+        flr_balance += flr_value / 0.02054
+    harvest_value = xlm_balance * price * 0.1 if price >= 1.0 else 0
+    flr_yield = flr_balance * 0.02054 * 0.065
+    nex_yield = nex_balance * 1.02 * 0.04
+    annual_yield = (xlm_balance * price + harvest_value + flr_yield + nex_yield) * 0.09
+    if annual_yield < 60000:
+        xlm_balance *= 1.10
+        annual_yield = (xlm_balance * price + harvest_value + flr_yield + nex_yield) * 0.09
+    print("Projected Annual Yield: " + str(annual_yield) + " (targeting $60K+)")
+    return xlm_balance, flr_balance
