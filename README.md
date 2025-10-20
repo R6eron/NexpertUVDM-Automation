@@ -192,3 +192,22 @@ def main():
 
 if __name__ == "__main__":
     main()
+def monitor_xlm_price(credentials, callback, historical_prices):
+    exchange = ccxt.mexc({'apiKey': credentials['mexc_api_key'], 'secret': credentials['mexc_api_secret'], 'enableRateLimit': True})
+    xlm_balance = next((b['available'] for b in get_nexo_balance(credentials) if b['currency'] == 'XLM'), 115735)
+    flr_balance = 0
+    high_mark = historical_prices[0] if historical_prices else 0.3245
+    for price in historical_prices:
+        current_flr = exchange.fetch_ticker('FLR/USDT')['last']
+        if current_flr <= 0.0153:  # 10% dip trigger
+            flr_amount = xlm_balance * 0.3245 / current_flr * 0.9  # 90% of XLM value
+            place_mexc_order(credentials, 'FLR/USDT', 'BUY', flr_amount, current_flr)
+            flr_balance += flr_amount
+        if price >= 1.0 and callback:
+            xlm_balance = callback(price, high_mark, xlm_balance)
+            high_mark = price
+        if price <= high_mark * 0.80 or price <= high_mark * 0.70:
+            xlm_balance = callback(price, high_mark, xlm_balance, reinvest=True)
+            high_mark = price
+        time.sleep(1)
+    return xlm_balance, flr_balance
