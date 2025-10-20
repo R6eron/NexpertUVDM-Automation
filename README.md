@@ -211,3 +211,21 @@ def monitor_xlm_price(credentials, callback, historical_prices):
             high_mark = price
         time.sleep(1)
     return xlm_balance, flr_balance
+
+def calculate_yield(price, high_mark, xlm_balance=115735, flr_balance=37042, nex_balance=3848, reinvest=False):
+    xlm_value = xlm_balance * 0.3565
+    flr_value = flr_balance * 0.02054
+    nex_value = nex_balance * 1.02
+    if reinvest:
+        reinvest_xlm = xlm_value * 0.1 * 0.5 / price
+        xlm_balance += reinvest_xlm
+        flr_value += flr_balance * 0.02054 * 0.05
+    harvest_value = xlm_value * 0.1 if price >= 1.0 else 0
+    flr_yield = flr_value * 0.065
+    nex_yield = nex_value * 0.04
+    annual_yield = (xlm_value + harvest_value + flr_yield + nex_yield) * 0.09
+    if annual_yield < 60000:
+        xlm_balance *= 1.10
+        annual_yield = (xlm_value + harvest_value + flr_yield + nex_yield) * 0.09
+    print("Projected Annual Yield: " + str(annual_yield) + " (targeting $60K+)")
+    return xlm_balance, flr_balance
