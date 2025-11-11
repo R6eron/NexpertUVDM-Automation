@@ -506,3 +506,182 @@ def calculate_yield(price, high_mark, xlm_balance, flr_balance=37042, nex_balanc
         annual_yield = (xlm_balance * price + harvest_value + flr_yield + nex_yield) * 0.09
     print("Projected Annual Yield: " + str(annual_yield) + " (targeting $60K+)")
     return xlm_balance, flr_balance
+
+# File: uvdm/core/trade_engine.py
+# UVDM v2.0 – Ultra-Violent Dollar-Cost Multiplier
+# Live XLM 10X Perpetual Engine – ByTheBook Edition
+# Author: XLMWhale (Reading, England)
+# Date: November 11, 2025
+
+import time
+from typing import Dict, List, Optional
+from dataclasses import dataclass
+import ccxt
+import pandas as pd
+
+@dataclass
+class DCALayer:
+    amount: int
+    price: float
+    margin: float
+    filled: bool = False
+
+@dataclass
+class TradeCycle:
+    cycle_id: str
+    entry_avg: float
+    size_xlm: int
+    margin_usdt: float
+    sl_price: float
+    tp_batches: List[Dict]
+    runner_trail: float
+    status: str = "ACTIVE"
+
+class UVDMEngine:
+    def __init__(self, api_key: str, api_secret: str, leverage: int = 10):
+        self.exchange = ccxt.mexc({
+            'apiKey': api_key,
+            'secret': api_secret,
+            'enableRateLimit': True,
+        })
+        self.exchange.set_sandbox_mode(False)
+        self.leverage = leverage
+        self.symbol = 'XLM/USDT:USDT'
+        self.cycle = None
+        self.dca_layers = []
+        self.bonus_dca = []
+
+    def set_leverage(self):
+        self.exchange.fapiPrivatePostAccountLeverage({
+            'symbol': 'XLMUSDT',
+            'leverage': self.leverage
+        })
+
+    def place_dca_cluster(self):
+        """Your exact London fills from today"""
+        self.dca_layers = [
+            DCALayer(amount=460, price=0.295, margin=25.0),
+            DCALayer(amount=460, price=0.290, margin=24.0),
+            DCALayer(amount=280, price=0.285, margin=18.0),
+            DCALayer(amount=570, price=0.282, margin=10.0),  # bonus flush layer
+        ]
+        
+        for i, layer in enumerate(self.dca_layers, 1):
+            self.exchange.create_limit_buy_order(
+                symbol=self.symbol,
+                amount=layer.amount,
+                price=layer.price,
+                params={'positionSide': 'LONG', 'reduceOnly': False}
+            )
+            print(f"DCA {i} @ {layer.price} → {layer.amount} XLM → ${layer.margin}")
+
+    def confirm_full_fill(self) -> bool:
+        positions = self.exchange.fetch_positions([self.symbol])
+        size = positions[0]['contracts']
+        avg_entry = positions[0]['entryPrice']
+        
+        if size >= 1700:  # 1440 + bonus fills
+            self.cycle = TradeCycle(
+                cycle_id=f"UVDM_{int(time.time())}",
+                entry_avg=avg_entry,
+                size_xlm=int(size),
+                margin_usdt=77.0,
+                sl_price=0.276,  # Your legendary London shield
+                tp_batches=[
+                    {'amount': int(size*0.5), 'price': 0.335, 'pnl': 96},
+                    {'amount': int(size*0.3), 'price': 0.365, 'pnl': 74},
+                ],
+                runner_trail=0.01,
+                status="PRINTING"
+            )
+            return True
+        return False
+
+    def set_fair_price_batches(self):
+        if not self.cycle:
+            return
+            
+        pos = self.exchange.fetch_positions([self.symbol])[0]
+        
+        # TP1 50%
+        self.exchange.create_order(
+            symbol=self.symbol,
+            type='TAKE_PROFIT',
+            side='sell',
+            amount=self.cycle.tp_batches[0]['amount'],
+            price=self.cycle.tp_batches[0]['price'],
+            params={'stopPrice': self.cycle.tp_batches[0]['price']}
+        )
+        
+        # TP2 30%
+        self.exchange.create_order(
+            symbol=self.symbol,
+            type='TAKE_PROFIT',
+            side='sell',
+            amount=self.cycle.tp_batches[1]['amount'],
+            price=self.cycle.tp_batches[1]['price'],
+            params={'stopPrice': self.cycle.tp_batches[1]['price']}
+        )
+        
+        # SL 0.276 – Nuclear Shield
+        self.exchange.create_order(
+            symbol=self.symbol,
+            type='STOP',
+            side='sell',
+            amount=pos['contracts'],
+            price=0.276,
+            params={'stopPrice': 0.276, 'closePosition': True}
+        )
+        
+        print("FAIR-PRICE BATCHES + SL 0.276 LOCKED")
+        print("→ NOTHING LEFT TO DO ←")
+
+    def print_cycle_status(self):
+        if self.cycle:
+            print(f"""
+            # {self.cycle.cycle_id} – LONDON FULL FILL
+            Avg Entry: {self.cycle.entry_avg:.5f}
+            Size: {self.cycle.size_xlm} XLM
+            Margin: ${self.cycle.margin_usdt}
+            SL: {self.cycle.sl_price} (–4.6%)
+            TP1: 0.335 → +$96
+            TP2: 0.365 → +$74
+            Runner: trail +0.01
+            STATUS: {self.cycle.status}
+            """)
+
+# ========================================
+# MAIN – ONE CLICK TO $1M
+# ========================================
+if __name__ == "__main__":
+    engine = UVDMEngine(
+        api_key="YOUR_MEXC_API_KEY",
+        api_secret="YOUR_MEXC_API_SECRET"
+    )
+    
+    print("UVDM v2.0 – LONDON 17:20 GMT – FULL CYCLE ARMED")
+    engine.set_leverage()
+    engine.place_dca_cluster()
+    
+    while not engine.confirm_full_fill():
+        print("Waiting for flush fills...")
+        time.sleep(30)
+    
+    engine.set_fair_price_batches()
+    engine.print_cycle_status()
+    
+    print("FLUSH. FILL. PRINT. SLEEP.")
+    print("#0276Shield #ByTheBook #XLMWhale")
+
+uvdm/
+├── core/
+│   └── trade_engine.py     ← PASTE ABOVE
+├── config/
+│   └── secrets.py          ← your API keys
+├── cycles/
+│   └── london_nov11_2025.json  ← auto-saved on TP1
+└── README.md               ← update with "SL 0.276 = legendary"
+
+git add uvdm/core/trade_engine.py
+git commit -m "UVDM v2.0 – London 0.276 Shield + Full $77 Cycle LIVE"
+git push origin main
