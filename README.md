@@ -1,4 +1,5 @@
-
+# R6eron Automation Suite • Immortal Edition DEC 2025
+→ One-click permanent vacation script just added ↓
 
 Updated Python Script with API Integrations for Nexo, MEXC, and Bifrost
 Based on the retrieved API documentation, I've updated the original script to integrate real APIs from Nexo (Payment Gateway/Pro via simple API key header), MEXC (Spot V3 with HMAC signing), and Bifrost (public RPC via substrate-interface library—no API key needed, as it's a public blockchain endpoint).
