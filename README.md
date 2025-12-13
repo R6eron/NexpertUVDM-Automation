@@ -12,7 +12,6 @@ git add .
 git commit -m "Add UVDM description + Jesse100 CTA"
 git push https://github.com/R6eron/NexpertUVDM-Automation/blob/main/README.md
 
-Works now. ☆
 R6eron Automation Suite • Immortal Edition  
 DEC 2025
 
