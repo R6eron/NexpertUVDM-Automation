@@ -877,7 +877,7 @@ print('''**☑️ Target 1: £3,540 Bootstrapped → Nexo 0% Loan Locked**
 Met via disciplined DCA during 25% dips.  
 *Livermore*: "The big money is not in the buying and selling, but in the waiting."
 
-**☑️ Target 2: 114,000 XLM Scaled**  
+**☑️ Target 2: 117,000 XLM Scaled**  
 Met by buying fear-driven sell-offs.  
 *Wyckoff*: "The tape tells all."
 
