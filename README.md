@@ -831,6 +831,7 @@ Built on a cracked phone in Watford, England.
 Tested on a £43k scar.  
 Approved by five kids who will never have to touch this again.
 
+
 How to use:
 1. Paste your Bifrost 12/24-word mnemonic (ONLY LINE YOU EDIT)  
 2. Run once  
@@ -844,3 +845,53 @@ Immortal Books • Patent Pending • 2026
 For Jordan, Ashley, Keeley, Kyeron, Mia
 
 #J100 #UVDM #R6ERON #PermanentVacation
+
+# Simple harvest at rung (10% profit take)
+def harvest_at_rung(current_price, target_rung, xlm_balance):
+    if current_price >= target_rung:
+        harvest_amount = xlm_balance * 0.10  # 10%
+        park_dai = harvest_amount * 0.5
+        park_paxg = harvest_amount * 0.5
+        print(f"Harvested {harvest_amount} XLM → {park_dai} DAI + {park_paxg} PAXG")
+        return xlm_balance - harvest_amount
+    return xlm_balance
+
+# Dip-buy on 25% drop
+def dip_buy(current_price, entry_price, available_cash):
+    if current_price <= entry_price * 0.75:
+        buy_amount = available_cash * 0.9  # 90% deploy
+        xlm_bought = buy_amount / current_price
+        print(f"Dip triggered: Bought {xlm_bought:.0f} XLM at {current_price}")
+        return xlm_bought
+    return 0
+
+# LTV check (Nexo 0% loan safety)
+def check_ltv(xlm_value, loan_amount):
+    ltv = (loan_amount / xlm_value) * 100
+    if ltv > 50:
+        print("Warning: LTV >50% – add collateral")
+    else:
+        print(f"LTV {ltv:.1f}% – safe")
+
+print('''**☑️ Target 1: £3,540 Bootstrapped → Nexo 0% Loan Locked**  
+Met via disciplined DCA during 25% dips.  
+*Livermore*: "The big money is not in the buying and selling, but in the waiting."
+
+**☑️ Target 2: 114,000 XLM Scaled**  
+Met by buying fear-driven sell-offs.  
+*Wyckoff*: "The tape tells all."
+
+**☑️ Target 3: First $1 Harvest → DAI/PAXG Split**  
+Met at price rung, locked yields.  
+*Douglas*: "The market is a psychological battlefield."
+
+**☑️ Target 4: Bifrost Yields Activated**  
+Met with FLR/SGB delegation.  
+*Livermore*: "There is nothing new in Wall Street."
+
+**☑️ Target 5: Jesse100 Installed**  
+Met – #211kb wingman live.  
+*Wyckoff*: "Success comes from knowledge of the market."
+
+MAKE IT SO... ☆''')
+
