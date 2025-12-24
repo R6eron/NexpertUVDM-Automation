@@ -1,5 +1,39 @@
 # Ultrasafe Virtual Digital Machine (UVDM) – The Living Book
+def get_xlm_price():
+    url = "https://api.coingecko.com/api/v3/simple/price?ids=stellar&vs_currencies=usd"
+    response = requests.get(url)
+    data = response.json()
+    return data['stellar']['usd']
+# Imports (top)
+import requests
+import time
+import hmac
+import hashlib
+import json
 
+# Credentials (load from .env - never hardcode)
+from dotenv import load_dotenv
+import os
+load_dotenv()
+API_KEY = os.getenv("NEXO_API_KEY")
+API_SECRET = os.getenv("NEXO_API_SECRET")
+
+# Functions (middle)
+def generate_signature(...):
+    ...
+
+def get_balances(...):
+    ...
+
+def swap_xlm_to_dai(...):
+    ...
+
+# Main Trigger Logic (bottom - runs the machine)
+if __name__ == "__main__":
+    while True:  # Loop for continuous monitoring
+        current_price = get_xlm_price()  # Your oracle function
+        check_and_harvest(current_price)
+        time.sleep(300)  # Check every 5 min
 WORLD FIRST CUT & PASTE Ai  
 Crossed Fingers "Jesse ON"
 
