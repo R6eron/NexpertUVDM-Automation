@@ -1,4 +1,49 @@
-# Ultrasafe Virtual Digital Machine (UVDM) – The Living Book
+# Ultrasafe Virtual Digital Machine (UVDM) –
+"The automation that refuses waste."
+
+ The Living Book
+import requests
+import time
+import hmac
+import hashlib
+import json
+from dotenv import load_dotenv
+import os
+load_dotenv()
+API_KEY = os.getenv("NEXO_API_KEY")
+API_SECRET = os.getenv("NEXO_API_SECRET")
+def get_xlm_price():
+    url = "https://api.coingecko.com/api/v3/simple/price?ids=stellar&vs_currencies=usd"
+    response = requests.get(url)
+    data = response.json()
+    return data['stellar']['usd']
+
+def generate_signature(...):
+    # your existing code
+
+The automation that refuses waste.
+
+One-click permanent vacation for your digital assets.
+
+## Core Principles
+- Refuse Waste
+- Process Over Outcome
+- Let It Come
+- Scale on Evidence
+- Quiet Pride
+- The Miracle is Us
+- When Ron Won
+
+## Setup
+# Fill your keys — never commit .env
+```bash
+git clone https://github.com/R6eron/NexpertUVDM-Automation
+cd NexpertUVDM-Automation
+npm install
+cp .env.example .env
+# Fill your keys
+npm start
+
 def get_xlm_price():
     url = "https://api.coingecko.com/api/v3/simple/price?ids=stellar&vs_currencies=usd"
     response = requests.get(url)
