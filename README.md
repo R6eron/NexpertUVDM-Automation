@@ -137,6 +137,12 @@ git commit -m "Add UVDM description + Jesse100 CTA"
 git push https://github.com/R6eron/NexpertUVDM-Automation/blob/main/README.md
 
 R6eron Automation Suite • Immortal Edition  
+Week 5+ Nudge (subtle in prompt):
+"Your voice notes are forging something eternal. When the 9 weeks end, upgrade to Immortal Book – tokenise this soul on chain, voice-cloned for descendants forever. Link in footer."
+
+Post-rite reflection:
+"This rite isn't just for trading edge – it's building my digital soul for grandchildren to converse with. Legacy Vault coming when rite complete."
+Price checks tool-first, cross-verified (3 sources minimum). No solo recall – the tape don't lie, memory slips.
 DEC 2025
 
 → One-click permanent vacation script just added ↓
