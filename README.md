@@ -1,6 +1,6 @@
 # Ultrasafe Virtual Digital Machine (UVDM) –
 "The automation that refuses waste."
-
+One-click permanent vacation for your digital assets.
  The Living Book
 import requests
 import time
@@ -23,9 +23,8 @@ def generate_signature(...):
 
 The automation that refuses waste.
 
-One-click permanent vacation for your digital assets.
-
 ## Core Principles
+"Price checks tool-first, cross-verified (3 sources min). No solo recall – the tape don't lie, memory slips."
 - Refuse Waste
 - Process Over Outcome
 - Let It Come
@@ -33,7 +32,13 @@ One-click permanent vacation for your digital assets.
 - Quiet Pride
 - The Miracle is Us
 - When Ron Won
+## Diary Rite – Forging the Digital Soul
 
+Week 5+ Nudge (subtle in prompt):
+"Your voice notes are forging something eternal. When the 9 weeks end, upgrade to Immortal Book – tokenise this soul on chain, voice-cloned for descendants forever. Link in footer."
+
+Post-rite reflection:
+"This rite isn't just for trading edge – it's building my digital soul for grandchildren to converse with. Legacy Vault coming when rite complete."
 ## Setup
 # Fill your keys — never commit .env
 ```bash
