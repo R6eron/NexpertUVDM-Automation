@@ -24,6 +24,7 @@ def generate_signature(...):
 The automation that refuses waste.
 
 ## Core Principles
+
 "Price checks tool-first, cross-verified (3 sources min). No solo recall – the tape don't lie, memory slips."
 - Refuse Waste
 - Process Over Outcome
@@ -33,6 +34,28 @@ The automation that refuses waste.
 - The Miracle is Us
 - When Ron Won
 ## Diary Rite – Forging the Digital Soul
+# On confirmed second break
+entry_price = current_price
+atr = calculate_atr(14)
+support = last_higher_low - atr
+first_res = entry_price + 2 * atr  # or fib_extension
+second_res = entry_price + 4 * atr
+
+open_10x_position(size=1000_notional)  # $100 margin
+
+monitor:
+  if price >= first_res:
+    close_50_percent()
+    re_open_5x(same_size)
+    trail_stop = breakeven
+
+  if new_higher_low:
+    trail_stop = new_higher_low - atr
+
+  if price >= second_res or trailing_target_hit:
+    close_all()
+    siphon_profits_to_flare()
+    reset_isolate_bag()
 
 Week 5+ Nudge (subtle in prompt):
 "Your voice notes are forging something eternal. When the 9 weeks end, upgrade to Immortal Book – tokenise this soul on chain, voice-cloned for descendants forever. Link in footer."
