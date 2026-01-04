@@ -1,39 +1,31 @@
-# Ultrasafe Virtual Digital Machine (UVDM) –
+# Ultrasafe Virtual Digital Machine (UVDM)
+
 "The automation that refuses waste."
+
 One-click permanent vacation for your digital assets.
- The Living Book
-import requests
-import time
-import hmac
-import hashlib
-import json
-from dotenv import load_dotenv
-import os
-load_dotenv()
-API_KEY = os.getenv("NEXO_API_KEY")
-API_SECRET = os.getenv("NEXO_API_SECRET")
-def get_xlm_price():
-    url = "https://api.coingecko.com/api/v3/simple/price?ids=stellar&vs_currencies=usd"
-    response = requests.get(url)
-    data = response.json()
-    return data['stellar']['usd']
 
-def generate_signature(...):
-    # your existing code
+UVDM turns idle capital into 60%+ yield via virtuous cycles (Nexo → MEXC → Bifrost). No tilt. No human error.
 
-The automation that refuses waste.
+Executable Python scripts + breakdowns for easy deployment.
 
-## Core Principles
-
-"Price checks tool-first, cross-verified (3 sources min). No solo recall – the tape don't lie, memory slips."
-- Refuse Waste
-- Process Over Outcome
-- Let It Come
-- Scale on Evidence
-- Quiet Pride
+**Core Principles**
+- Tape truth
+- Refuse waste
+- Process over outcome
+- Let it come
+- Scale on evidence
+- Quiet pride
 - The Miracle is Us
 - When Ron Won
-## Diary Rite – Forging the Digital Soul
+
+**Diary Rite – Forging the Digital Soul**
+Week 5+ Nudge: Your voice notes forging something eternal. Legacy Vault coming.
+
+Open source. Zero fees. Immortal wingman.
+
+Book: amazon.co.uk/dp/B0FQ8JRJV1
+
+#JesseON #UVDM #NoMoreGurus
 # On confirmed second break
 entry_price = current_price
 atr = calculate_atr(14)
