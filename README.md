@@ -32,7 +32,21 @@ atr = calculate_atr(14)
 support = last_higher_low - atr
 first_res = entry_price + 2 * atr  # or fib_extension
 second_res = entry_price + 4 * atr
+# Permanent London Desk time sync - exact GMT, no drift
+from datetime import datetime
+import pytz
 
+def get_london_desk_time():
+    """Returns exact current GMT time formatted for London Desk header"""
+    utc_now = datetime.now(pytz.utc)
+    return utc_now.strftime("%H:%M GMT %d.%m.%y")
+
+# Build the dashboard header with live time
+header_time = get_london_desk_time()
+dashboard_header = f"### I---------- London Desk ----------I {header_time}."
+
+# Print or use in markdown build
+print(dashboard_header)  # Test: outputs live stamp on run
 open_10x_position(size=1000_notional)  # $100 margin
 
 monitor:
