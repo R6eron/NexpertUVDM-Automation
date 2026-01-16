@@ -1,4 +1,14 @@
 # R6eron Automation Suite - Immortal Edition - Jesse100 Wingman Core
+def check_and_harvest(current_price):
+    """Mechanical harvest on trigger."""
+    if current_price is None:
+        return
+    thresholds = [1.00, 1.50, 2.00, 2.50, 3.00, 3.50, 4.00, 4.50, 5.00, 5.50, 6.00, 6.50, 7.00, 7.50, 8.00]
+    for thresh in thresholds:
+        if current_price >= thresh:
+            print(f"XLM >= ${thresh} - Harvest: Swap 10% to DAI/PAXG 50/50 - Alert sent.")
+            # Add Twilio/swap logic here - no greed, mechanical take
+            break  # Process one threshold per cycle to avoid overlap
 # Retrains hourly on new data - no revocation, dynamic strategies
 import os
 from dotenv import load_dotenv
