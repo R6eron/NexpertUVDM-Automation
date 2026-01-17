@@ -45,12 +45,16 @@ def get_xlm_price():
         print(f"Price probe error: {e}")
         return None
 
-def check_and_harvest(current_price):
-    """Mechanical harvest on trigger."""
-    if current_price is None:
-        return
-    if current_price >= 1.00:
-        print("XLM >= $1 - Harvest: Swap to DAI/PAXG - Alert sent.")
+MEXC_API_KEY=your_mexc_key  
+MEXC_SECRET=your_mexc_secret  
+NEXO_API_KEY=your_nexo_key  
+NEXO_SECRET=your_nexo_secret  
+TWILIO_SID=your_twilio_sid  
+TWILIO_TOKEN=your_twilio_token  
+TWILIO_NUMBER=your_twilio_number  
+BIFROST_RPC_URL=https://rpc.flare.network  
+# Add Flare wallet private key if needed (secure!)
+FLARE_WALLET_KEY=your_flare_key
         # Add Twilio/Swap logic here
     # Add more thresholds (e.g., $2, $3) as per 8 steps
 
