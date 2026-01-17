@@ -1059,3 +1059,25 @@ Met – #211kb wingman live.
 
 MAKE IT SO... ☆''')
 
+import requests
+import json
+
+def pull_repo_characteristics(repo_url):
+    # GitHub API for repo info
+    api_url = repo_url.replace('https://github.com/', 'https://api.github.com/repos/').rstrip('/') + '?&client_id=your_github_token'
+    response = requests.get(api_url)
+    if response.status_code == 200:
+        data = response.json()
+        return {
+            'name': data['name'],
+            'description': data['description'],
+            'license': data['license']['name'] if data['license'] else 'None',
+            'files': [file['name'] for file in requests.get(f"{api_url}/contents").json()],
+            'stars': data['stargazers_count'],
+            'forks': data['forks_count']
+        }
+    return "Error fetching repo data"
+
+# Usage
+characteristics = pull_repo_characteristics('https://github.com/R6eron/NexpertUVDM-Automation/tree/main')
+print(json.dumps(characteristics, indent=2))
