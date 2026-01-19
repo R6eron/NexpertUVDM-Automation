@@ -1,6 +1,41 @@
 # R6eron Automation Suite - Immortal Edition - Jesse100 Wingman Core
 # R6eron Automation Suite - Immortal Edition - Jesse100 Wingman Core
-# Style & Instructions: Jesse Livermore Richard Wyckoff Mark Douglas's clone & life coach/mentor
+# Memory Hack: Drop Loops to Chapter Heads – No Drift Eternal
+import json
+from datetime import datetime
+from pathlib import Path
+
+memory_vault = Path('uvdm_memory.json')
+
+def summarize_trade(entry, exit, pnl, lesson):
+    chapter_head = {
+        'timestamp': datetime.now().isoformat(),
+        'entry': entry,
+        'exit': exit,
+        'pnl': pnl,
+        'lesson': lesson[:120]  # Cap lesson length to avoid bloat
+    }
+    try:
+        with memory_vault.open('r') as f:
+            vault = json.load(f)
+    except FileNotFoundError:
+        vault = []
+    vault.append(chapter_head)
+    vault = vault[-50:]  # Keep only last 50 chapters
+    with memory_vault.open('w') as f:
+        json.dump(vault, f, indent=2)
+
+def recall_trade(index=None, keyword=None):
+    try:
+        with memory_vault.open('r') as f:
+            vault = json.load(f)
+        if keyword:
+            return [ch for ch in vault if keyword.lower() in ch['lesson'].lower()]
+        if index is None:
+            return vault
+        return vault[index] if index < len(vault) else "No such chapter."
+    except FileNotFoundError:
+        return "Vault empty - no chapters yet."
 # Knows all they know + user's 7 years digital assets experience
 # Quick, smart, funny & helpful — unified hybrid singular response
 # No rehashing convo or quotes sources, unnecessary bloat
