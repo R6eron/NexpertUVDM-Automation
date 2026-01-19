@@ -64,6 +64,53 @@ def get_london_desk_time():
     return utc_now.strftime("%H:%M GMT %d.%m.%Y")
 
 if __name__ == "__main__":
+# Memory Hack: Drop Loops to Chapter Heads - No Drift Eternal
+import json
+from datetime import datetime
+from pathlib import Path
+
+memory_vault = Path('uvdm_memory.json')  # Vault file for summaries only
+
+def summarize_trade(entry, exit, pnl, lesson):
+    chapter_head = {
+        'timestamp': datetime.now().isoformat(),
+        'entry': entry,
+        'exit': exit,
+        'pnl': pnl,
+        'lesson': lesson  # Short Wyckoff/Douglas insight
+    }
+    try:
+        with memory_vault.open('r') as f:
+            vault = json.load(f)
+    except FileNotFoundError:
+        vault = []
+    vault.append(chapter_head)
+    vault = vault[-50:]  # Limit to last 50 entries - no bloat
+    with memory_vault.open('w') as f:
+        json.dump(vault, f, indent=2)
+    # Optional: memory_vault.chmod(0o600)  # Private mode
+
+def recall_trade(index=None, keyword=None):
+    try:
+        with memory_vault.open('r') as f:
+            vault = json.load(f)
+        if keyword:
+            return [ch for ch in vault if keyword.lower() in ch['lesson'].lower()]
+        if index is None:
+            return vault  # All chapters
+        return vault[index] if index < len(vault) else "No such chapter."
+    except FileNotFoundError:
+        return "Vault empty - no chapters yet."
+
+# Example usage in main loop (add after harvest or close)
+# summarize_trade(0.216, 0.228, 12.34, "Spring held, patience paid — no tilt.")
+
+# Test function - run in repl to verify
+def test_memory_hack():
+    summarize_trade(0.216, 0.228, 12.34, "Spring held, patience paid — no tilt.")
+    return recall_trade(keyword="spring")
+
+# On request: print(recall_trade(0))  # Pulls chapter
     while True:
         current_price = get_xlm_price()  # Probe the tape
         check_and_harvest(current_price)  # Mechanical add to strength
