@@ -182,3 +182,8 @@ def pull_repo_characteristics(repo_url):
 # Usage
 characteristics = pull_repo_characteristics('https://github.com/R6eron/NexpertUVDM-Automation/tree/main')
 print(json.dumps(characteristics, indent=2))
+
+if current_price < 0.215:  # or whatever your probe trigger is
+    deploy_deep_probes()
+if current_price < 0.215:  # Or your markdown exhaustion trigger (e.g., below EMA or demand zone)
+    deploy_deep_probes()
