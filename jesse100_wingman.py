@@ -187,3 +187,39 @@ if current_price < 0.215:  # or whatever your probe trigger is
     deploy_deep_probes()
 if current_price < 0.215:  # Or your markdown exhaustion trigger (e.g., below EMA or demand zone)
     deploy_deep_probes()
+
+# Accelerator / Intraday Session Vault – Flexible Memory (daily reset + summary carry-over)
+intraday_vault = Path('accelerator_intraday.json')  # Per-session file, deleted or overwritten daily
+
+def save_intraday_state(entry, current, pnl, status, lesson):
+    state = {
+        'timestamp': datetime.now().isoformat(),
+        'entry': entry,
+        'current': current,
+        'pnl': pnl,
+        'status': status,  # 'open', 'closed', 'stopped'
+        'lesson': lesson[:120]
+    }
+    with intraday_vault.open('w') as f:
+        json.dump(state, f, indent=2)
+
+def load_intraday_summary():
+    if not intraday_vault.exists():
+        return None
+    try:
+        with intraday_vault.open('r') as f:
+            state = json.load(f)
+        return state
+    except:
+        return None
+
+def start_new_session():
+    summary = load_intraday_summary()
+    if summary:
+        print(f"Intraday carry-over from yesterday: {summary['status']} {summary['entry']}, PNL {summary['pnl']}, lesson: {summary['lesson']}")
+        # Optional: move to main vault if closed
+        if summary['status'] == 'closed' or summary['status'] == 'stopped':
+            summarize_trade(summary['entry'], summary['current'], summary['pnl'], summary['lesson'])
+    # Wipe or overwrite for new session
+    if intraday_vault.exists():
+        intraday_vault.unlink()  # Delete old file on new session start
