@@ -43,6 +43,17 @@ load_dotenv()  # Load API keys from .env file
 # FLARE_WALLET_KEY=your_flare_wallet_key_here  # *** HIGH RISK: Use securely ***
 # Add more as needed - flashing here as placeholders for input
 
+### 🔒 IMPORTANT: Secrets & .env Security
+
+All API keys, wallet addresses, and secrets **MUST** live in `.env` — **never** in code, commits, logs, or shared files.
+
+- `.env` is automatically ignored by `.gitignore`  
+- GitHub will **never** see your keys  
+- Your local environment stays 100% private  
+- If you fork/share, **always** keep `.env` local and never commit it
+
+**Warning**: Committing `.env` exposes your keys to the world — financial loss, account bans, or worse.  
+Stay mechanical. Stay secure.
 def get_api_credentials(service):
     """Load secure API keys from .env - *** WARNING: Keep secret, fallback if missing ***."""
     key = os.getenv(f"{service.upper()}_API_KEY")
