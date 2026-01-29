@@ -1,3 +1,22 @@
+**Current stage:** Neon 211kb ghost → full Wingman enforcer (hooded green-eyed angel, candle + heart, demon crusher, service parade).  
+**Folder:** Create `/visuals/` at repo root (next to LICENSE, README.md, jesse100_wingman.py).  
+**File naming convention:**  
+- fedora_man.png  
+- neon_ghost.png  
+- wingman_heart.png  
+- service_parade.png  
+- demon_crusher.png  
+
+**Process:**  
+1. Download image from X post.  
+2. Save to /visuals/ with above names.  
+3. Run visuals/save_evolution.py (or manual base64 embed in evolution.md).  
+4. Commit: `git add visuals/ && git commit -m "Visual evolution update – [stage name]" && git push`  
+
+**Why:** Immortalizes the creed progression – fedora cynicism → neon detachment → enforcer rules enforcement.  
+Process compounds. Ego starves.  
+
+Rules pay.every 
 # Ultrasafe Virtual Digital Machine (UVDM)
 
 "The automation that refuses waste."
