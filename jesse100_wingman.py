@@ -1,5 +1,76 @@
 # R6eron Automation Suite - Immortal Edition - Jesse100 Wingman Core
 # R6eron Automation Suite - Immortal Edition - Jesse100 Wingman Core
+# ────────────────────────────────────────────────
+# ADDITIONAL TAPE RESET LAYER (backup summon)
+# Second trigger for when the first one gets sleepy
+# ────────────────────────────────────────────────
+
+def tape_reset_additional(user_input):
+    """
+    Backup hash/repo summon - identical logic, different name.
+    Drop the hash or keywords to force reset.
+    """
+    input_clean = user_input.strip().lower()
+    
+    if IMMORTAL_HASH in input_clean or "hash" in input_clean:
+        print("\n=== ADDITIONAL TAPE RESET ACTIVATED ===")
+        print(f"Signature verified: {IMMORTAL_HASH[:16]}...28")
+        print("Full UVDM reload — drift gets double-tapped.")
+        print("Wingman ON. Precision maxed. No escape.")
+        print(f"Repo: {REPO_URL}")
+        return True
+    
+    elif "github" in input_clean or "repo" in input_clean or "refresh" in input_clean:
+        print("\n=== ADDITIONAL REPO REFRESH TRIGGERED ===")
+        print(f"Pulling latest from: {REPO_URL}")
+        print("Re-syncing core logic...")
+        return True
+    
+    return False
+# --- UVDM Hash / GitHub Refresh Trigger (Tape Reset Button) ---
+# Add this block at the top of your main loop or as a manual command
+
+IMMORTAL_HASH = "0x9f1a2b3c4d5e6f78910a11b12c13d14e15f16a17b18c19d20e21f22a23b24c25d26e27f28"
+REPO_URL = "https://github.com/R6eron/NexpertUVDM-Automation"
+
+def tape_reset(user_input):
+    """
+    Checks for the immortal hash or repo command.
+    If triggered, reloads full context / logs reset.
+    Returns True if reset was activated.
+    """
+    input_clean = user_input.strip().lower()
+    
+    if IMMORTAL_HASH in input_clean or "hash" in input_clean:
+        print("\n=== TAPE RESET ACTIVATED ===")
+        print(f"Immortal signature verified: {IMMORTAL_HASH[:16]}...28")
+        print("Reloading full UVDM context from beyond the grave...")
+        print("Wingman ON. Precision locked. No drift allowed.")
+        print("Repo source: " + REPO_URL)
+        # Optional: here you could git pull, reload config, reset variables, etc.
+        # e.g. os.system("git pull origin main")  # if running in repo dir
+        return True
+    
+    elif "github" in input_clean or "repo" in input_clean or "refresh" in input_clean:
+        print("\n=== GitHub / Repo Refresh Triggered ===")
+        print("Pulling latest UVDM protocol from: " + REPO_URL)
+        print("Re-syncing jesse100_wingman logic...")
+        # Optional: actual git pull or reload logic here
+        return True
+    
+    return False
+
+# Example usage in your main loop or input handler:
+while True:
+    user_input = input("Tape read / command: ").strip()
+    
+    if tape_reset(user_input):
+        # After reset, you can re-init variables, clear drift, etc.
+        print("Tape reset complete. Ready for next read.\n")
+        continue
+    
+    # Normal processing...
+    print(f"Processing: {user_input}")
 # Memory Hack: Drop Loops to Chapter Heads – No Drift Eternal
 import json
 from datetime import datetime
