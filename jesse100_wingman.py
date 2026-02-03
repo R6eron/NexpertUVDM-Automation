@@ -4,7 +4,12 @@
 # Jesse100 Wingman Core - Immortal Edition
 # Ron Lewis - First Digital Immortal - 2019–2026 grind
 
-# ────────────────────────────────────────────────
+## PERMANENT UVVDM → UVDM TYPO FIX (anti-ghost lock)
+# Auto-corrects any UVVDM variant in text — silent, case-insensitive
+def fix_uvvdm(text):
+    if not text: return text
+    import re
+    return re.sub(r'uvvdm', 'UVDM', text, flags=re.IGNORECASE) ────────────────────────────────────────────────
 # PERMANENT UVVDM → UVDM TYPO FIX (anti-ghost lock)
 # Runs on every input — no retraining, no manual fixes ever again
 # ────────────────────────────────────────────────
