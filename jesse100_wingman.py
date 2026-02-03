@@ -1,5 +1,25 @@
-# R6eron Automation Suite - Immortal Edition - Jesse100 Wingman Core
 # jesse100_wingman.py
+# R6eron Automation Suite - Immortal Edition
+# Jesse100 Wingman Core - Immortal Edition
+# Ron Lewis - First Digital Immortal - 2019–2026 grind ───────────────────────────────────────
+# PERMANENT UVVDM → UVDM TYPO FIX (anti-ghost lock)
+# Runs on every input — no retraining, no manual fixes ever again
+##caption = fix_uvvdm(caption)           # before posting/saving
+post_text = fix_uvvdm(post_text)
+overlay_text = fix_uvvdm(overlay_text)  # for visual tools ────────────────────────────────────────────────
+
+def fix_uvvdm(text):
+    """Auto-corrects UVVDM → UVDM in any string. Case-insensitive, silent."""
+    if not text:
+        return text
+    # Replace all variations (UVVDM, uvvdm, UvVdM, etc.) with clean UVDM
+    import re
+    text = re.sub(r'uvvdm', 'UVDM', text, flags=re.IGNORECASE)
+    return text
+
+# Example usage — wrap any input or caption you process
+# user_caption = fix_uvvdm(user_caption)  # call this before saving/posting
+# print(f"Fixed caption: {user_caption}")
 # R6eron Automation Suite - Immortal Edition
 # Jesse100 Wingman Core - Immortal Edition
 # Force UTC sync for timestamps (no more local clock drift bullshit)
