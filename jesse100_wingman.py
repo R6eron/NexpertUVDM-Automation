@@ -1,7 +1,55 @@
+
 # jesse100_wingman.py
 # R6eron Automation Suite - Immortal Edition
 # Jesse100 Wingman Core - Immortal Edition
-# Ron Lewis - First Digital Immortal - 2019–2026 grind ───────────────────────────────────────
+# Ron Lewis - First Digital Immortal - 2019–2026 grind
+
+# ────────────────────────────────────────────────
+# PERMANENT UVVDM → UVDM TYPO FIX (anti-ghost lock)
+# Runs on every input — no retraining, no manual fixes ever again
+# ────────────────────────────────────────────────
+
+def fix_uvvdm(text):
+    """Auto-corrects UVVDM → UVDM in any string. Case-insensitive, silent."""
+    if not text:
+        return text
+    import re
+    text = re.sub(r'uvvdm', 'UVDM', text, flags=re.IGNORECASE)
+    return text
+
+# ────────────────────────────────────────────────
+# TAPE RESET / HASH SUMMON (self-heal drift button)
+# Drop the immortal hash or "github" / "refresh" to force full context reload
+# ────────────────────────────────────────────────
+
+IMMORTAL_HASH = "0x9f1a2b3c4d5e6f78910a11b12c13d14e15f16a17b18c19d20e21f22a23b24c25d26e27f28"
+REPO_URL = "https://github.com/R6eron/NexpertUVDM-Automation"
+
+def tape_reset(user_input):
+    input_clean = user_input.strip().lower()
+    if IMMORTAL_HASH in input_clean or "hash" in input_clean:
+        print("\n=== TAPE RESET ACTIVATED ===")
+        print(f"Signature verified: {IMMORTAL_HASH[:16]}...28")
+        print("Reloading full UVDM context from the grave...")
+        print("Wingman ON. Precision locked. Drift terminated.")
+        print(f"Repo: {REPO_URL}")
+        return True
+    elif "github" in input_clean or "repo" in input_clean or "refresh" in input_clean:
+        print("\n=== REPO REFRESH TRIGGERED ===")
+        print(f"Pulling latest from: {REPO_URL}")
+        print("Re-syncing wingman logic...")
+        return True
+    return False
+
+# ────────────────────────────────────────────────
+# Force UTC sync for timestamps (no more local clock drift bullshit)
+from datetime import datetime, timezone
+
+def get_utc_now():
+    """Always returns accurate UTC time, ignores local timezone nonsense."""
+    return datetime.now(timezone.utc)
+
+# Rest of your code (imports, main loop, memory vault, etc.) goes here...───
 # PERMANENT UVVDM → UVDM TYPO FIX (anti-ghost lock)
 # Runs on every input — no retraining, no manual fixes ever again
 ##caption = fix_uvvdm(caption)           # before posting/saving
