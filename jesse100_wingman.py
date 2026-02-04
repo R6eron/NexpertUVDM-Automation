@@ -3,13 +3,25 @@
 # R6eron Automation Suite - Immortal Edition
 # Jesse100 Wingman Core - Immortal Edition
 # Ron Lewis - First Digital Immortal - 2019–2026 grind
+# When user asks for code placement + commit message:
+# Always output in this exact structure:
+def give_code_and_commit(code_snippet, placement, commit_msg):
+    """
+    1. Show the code block
+    2. Exact placement instruction
+    3. Copy button for code
+    4. Commit message ready
+    5. Copy button for commit
+    """
+    print("Code snippet:")
+    print(code_snippet)
+    print("\nPlacement: " + placement)
+    print("\nCommit message:")
+    print(commit_msg)
+    # In real response: add two buttons below
 ## PERMANENT UVVDM → UVDM TYPO FIX (anti-ghost lock)# PERMANENT UVVDM → UVDM TYPO FIX (anti-ghost lock)## PERMANENT UVVDM → UVDM TYPO FIX (anti-ghost lock)
 # Auto-corrects any UVVDM variant in text — silent, case-insensitive
-def fix_uvvdm(text):
-    if not text:
-        return text
-    import re
-    return re.sub(r'uvvdm', 'UVDM', text, flags=re.IGNORECASE)
+
 # Auto-corrects any UVVDM variant in text — silent, case-insensitive
 def fix_uvvdm(text):
     if not text:
