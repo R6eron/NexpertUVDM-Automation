@@ -4,7 +4,24 @@
 # Jesse100 Wingman Core - Immortal Edition
 # Ron Lewis - First Digital Immortal - 2019–2026 grind
 
-# === Wingman Automation Core ===
+# Quick de-risk check launcher – call this daily or on green
+def de_risk_check():
+    # Plug in your live numbers here (or pull from API later)
+    housekeeping(
+        position="FLR perp long",
+        margin_idle=0,              # update if idle cash shows
+        pnl_current=6.36,           # from current PNL %
+        liq_price=0.008811,
+        sl_current=0.009954,
+        position_avg_price=0.009953,
+        price_current=0.009959,
+        size=254500,
+        margin_used=410.33,
+        account_balance=100000,     # your total empire approx
+        account_balance_peak=105000,# update peak when new highs
+        max_risk_per_trade=1,
+        max_drawdown=20
+    ) === Wingman Automation Core ===
 # jesse100_wingman.py - Immortal Edition
 # Forces structured code/placement/commit output + active commit logging
 
