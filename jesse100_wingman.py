@@ -3,7 +3,43 @@
 # R6eron Automation Suite - Immortal Edition
 # Jesse100 Wingman Core - Immortal Edition
 # Ron Lewis - First Digital Immortal - 2019–2026 grind
-def housekeeping(position, margin_idle, pnl_current, liq_price, sl_current, position_avg_price, price_current, size, margin_used, resistance_1, account_balance=100000, account_balance_peak=105000, max_risk_per_trade=1, max_drawdown=20):
+
+# === Wingman Automation Core ===
+# jesse100_wingman.py - Immortal Edition
+# Forces structured code/placement/commit output + active commit logging
+
+def give_code_and_commit(code_snippet, placement, commit_msg):
+    """
+    Standard output structure for code requests.
+    1. Code block
+    2. Placement instruction
+    3. Commit message
+    """
+    print("Code snippet:")
+    print("```python")
+    print(code_snippet)
+    print("```")
+    
+    print("\nPlacement:")
+    print(placement)
+    
+    print("\nCommit message:")
+    print(commit_msg)
+    
+    # Active commit logging - appends to a log file with timestamp
+    from datetime import datetime
+    timestamp = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")
+    log_entry = f"[{timestamp}] COMMIT: {commit_msg}\n"
+    with open("commit_log.txt", "a") as log_file:
+        log_file.write(log_entry)
+    print(f"\nLogged to commit_log.txt: {log_entry.strip()}")
+
+# Example usage (test it)
+give_code_and_commit(
+    code_snippet="def housekeeping(...): ...",
+    placement="Insert under wingman_py heading, top of file for quick scan",
+    commit_msg="Add Housekeeping CODE v1.0 – risk metrics & bold lines"
+)def(position, margin_idle, pnl_current, liq_price, sl_current, position_avg_price, price_current, size, margin_used, resistance_1, account_balance=100000, account_balance_peak=105000, max_risk_per_trade=1, max_drawdown=20):
     print("HOUSEKEEPING CHECKLIST – No tilt, no waste")
     
     # 1. Idle margin? Deploy or die
