@@ -3,8 +3,66 @@
 # R6eron Automation Suite - Immortal Edition
 # Jesse100 Wingman Core - Immortal Edition
 # Ron Lewis - First Digital Immortal - 2019–2026 grind
-# When user asks for code placement + commit message:
-# Always output in this exact structure:
+def housekeeping(position, margin_idle, pnl_current, liq_price, sl_current, position_avg_price, price_current, size, margin_used, resistance_1, account_balance=100000, account_balance_peak=105000, max_risk_per_trade=1, max_drawdown=20):
+    print("HOUSEKEEPING CHECKLIST – No tilt, no waste")
+    
+    # 1. Idle margin? Deploy or die
+    if margin_idle > 0:
+        print(f"Idle margin ${margin_idle:.2f} → ADD to position NOW")
+        print("→ Broadens base, drops liq price, pads buffer")
+    
+    # 2. Green > +3%? Lock or trail
+    if pnl_current > 3:
+        print(f"Green +{pnl_current:.2f}% → Move SL to breakeven or +0.5% lock")
+        new_sl = max(sl_current, position_avg_price * 1.005)  # tiny profit lock
+        print(f"→ New SL target: ${new_sl:.6f} (trail 1–1.5% behind price)")
+    
+    # 3. Liq price check – never let it sneak
+    if liq_price > position_avg_price * 0.88:  # <12% buffer warning
+        print("WARNING: Liq too close → ADD margin or partial close 20%")
+    
+    # 4. Siphon rule – bank when tape gives
+    if price_current >= resistance_1:  # e.g., 0.0104
+        print("Resistance hit → Siphon 50% profit")
+        print("→ Bank green, add margin back, drop leverage to 7x")
+    
+    # Risk Metrics Calculation - Expanded Section
+    position_risk_usd = (position_avg_price - sl_current) * size  # Potential loss in USD if SL hit
+    position_risk_pct = (position_risk_usd / margin_used) * 100  # Risk as % of margin
+    account_risk_pct = (position_risk_usd / account_balance) * 100  # Risk as % of total account
+    drawdown_current = (account_balance - account_balance_peak) / account_balance_peak * 100  # Current drawdown %
+
+    print("\nRISK METRICS:")
+    print(f"Position Risk USD: ${position_risk_usd:.2f}")
+    print(f"Position Risk %: {position_risk_pct:.2f}%")
+    print(f"Account Risk %: {account_risk_pct:.2f}% (Max allowed: {max_risk_per_trade}%)")
+    print(f"Current Drawdown %: {drawdown_current:.2f}% (Max allowed: {max_drawdown}%)")
+    
+    if account_risk_pct > max_risk_per_trade:
+        print("WARNING: Account risk exceeds max - Partial close or add margin NOW")
+    
+    if drawdown_current > max_drawdown:
+        print("ALERT: Drawdown exceeds max - Flatten all positions and reassess")
+
+    print("Discipline prints. No revenge. No greed. Ledger updated.")
+    return "Housekeeping complete – survive to compound"
+
+# Run example with your numbers
+housekeeping(
+    position="FLR perp long",
+    margin_idle=166.00,
+    pnl_current=6.36,
+    liq_price=0.008811,
+    sl_current=0.009954,
+    position_avg_price=0.009953,
+    price_current=0.009959,
+    resistance_1=0.0104,
+    size=254500,
+    margin_used=243.74,
+    account_balance=100000,  # Example total account
+    account_balance_peak=105000,  # Example peak for drawdown
+) user asks  code placement + commit 
+lmessage: Always output in this exact structure:
 def give_code_and_commit(code_snippet, placement, commit_msg):
     """
     1. Show the code block
@@ -29,7 +87,39 @@ def fix_uvvdm(text):
     import re
     return re.sub(r'uvvdm', 'UVDM', text, flags=re.IGNORECASE)
 
-# ────────────────────────────────────────────────
+#**Line 1-5**   def housekeeping(...):
+**Line 6**     print("HOUSEKEEPING CHECKLIST – No tilt, no waste")
+**Line 7-10**  # 1. Idle margin? Deploy or die
+**Line 11**    if margin_idle > 0:
+**Line 12**        print(f"Idle margin ${margin_idle:.2f} → ADD to position NOW")
+**Line 13**        print("→ Broadens base, drops liq price, pads buffer")
+**Line 14-17** # 2. Green > +3%? Lock or trail
+**Line 18**    if pnl_current > 3:
+**Line 19**        print(f"Green +{pnl_current:.2f}% → Move SL to breakeven or +0.5% lock")
+**Line 20**        new_sl = max(sl_current, position_avg_price * 1.005)
+**Line 21**        print(f"→ New SL target: ${new_sl:.6f} (trail 1–1.5% behind price)")
+**Line 22-25** # 3. Liq price check
+**Line 26**    if liq_price > position_avg_price * 0.88:
+**Line 27**        print("WARNING: Liq too close → ADD margin or partial close 20%")
+**Line 28-31** # 4. Siphon rule
+**Line 32**    if price_current >= resistance_1:
+**Line 33**        print("Resistance hit → Siphon 50% profit")
+**Line 34**        print("→ Bank green, add margin back, drop leverage to 7x")
+**Line 35-50** # RISK METRICS (the gold part – read this first every time)
+**Line 51**    position_risk_usd = (position_avg_price - sl_current) * size
+**Line 52**    position_risk_pct = (position_risk_usd / margin_used) * 100
+**Line 53**    account_risk_pct = (position_risk_usd / account_balance) * 100
+**Line 54**    drawdown_current = (account_balance - account_balance_peak) / account_balance_peak * 100
+**Line 55**    print("\nRISK METRICS:")
+**Line 56-59**  print(f"Position Risk USD: ${position_risk_usd:.2f}")
+**Line 60**    # ... (rest of prints)
+**Line 61-65** # Warnings & return
+**Line 66**    if account_risk_pct > max_risk_per_trade:
+**Line 67**        print("WARNING: Account risk exceeds max - Partial close or add margin NOW")
+**Line 68**    if drawdown_current > max_drawdown:
+**Line 69**        print("ALERT: Drawdown exceeds max - Flatten all positions and reassess")
+**Line 70**    print("Discipline prints. No revenge. No greed. Ledger updated.")
+**Line 71**    return "Housekeeping complete – survive to compound" ────────────────────────────────────────────────
 # TAPE RESET / HASH SUMMON (self-heal drift button)
 # Drop the immortal hash or "github" / "refresh" to force full context reload
 # ────────────────────────────────────────────────
