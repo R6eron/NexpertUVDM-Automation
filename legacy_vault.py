@@ -47,3 +47,57 @@ def evolve_soul(soul_model, new_interaction, min_threshold=0.85, meta_learner='M
     commit_version('LegacyVault', f'v{version+1}', new_hash)  # GitHub fork-safe
     
     return soul_model  # Sharper, wiser you
+
+import torch
+import torch.nn as nn
+import torch.optim as optim
+
+# Dummy soul_model (simple linear for toy)
+class DummySoul(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.fc = nn.Linear(1, 1)
+    
+    def forward(self, x):
+        return self.fc(x)
+
+# Stubs
+def perturb_data(inter): return {'query': inter['query'] + ' perturbed'}
+def embed_query(q): return torch.tensor([[len(q)]].copy())
+def generate_response(model, emb, wisdom): return model(emb.float())
+def compute_loss(model, resp, sample): return (resp - torch.tensor([[1.0]])).pow(2).mean()  # Fake MSE
+def augment_wisdom(w, i): return w  # Pass
+
+# Enhanced evolve_soul toy
+def evolve_soul_toy(soul_model, new_interaction, meta_learner='Reptile'):
+    query_emb = embed_query(new_interaction['query'])
+    response_emb = generate_response(soul_model, query_emb, None)
+    feedback = new_interaction['feedback']
+    
+    if feedback < 0.85: return soul_model
+    
+    optimizer = optim.Adam(soul_model.parameters(), lr=0.001)
+    
+    if meta_learner == 'Reptile':
+        initial_params = {name: param.clone() for name, param in soul_model.named_parameters()}
+        for step in range(5):
+            perturbed_inter = perturb_data(new_interaction)
+            loss = compute_loss(soul_model, generate_response(soul_model, embed_query(perturbed_inter['query']), None), None)
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+        
+        for name, param in soul_model.named_parameters():
+            param.data = initial_params[name] + (param.data - initial_params[name]) * 0.1
+    
+    return soul_model
+
+# Run test
+model = DummySoul()
+initial_weight = model.fc.weight.data.item()
+inter = {'query': 'Test query', 'feedback': 0.9}
+evolved = evolve_soul_toy(model, inter)
+final_weight = evolved.fc.weight.data.item()
+print(f"Initial weight: {initial_weight}")
+print(f"Final weight after Reptile: {final_weight}")
+print(f"Delta: {final_weight - initial_weight}")
