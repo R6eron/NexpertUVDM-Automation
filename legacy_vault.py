@@ -16,29 +16,56 @@ from transformers import Wav2Vec2Processor, HubertForCTC  # speech base
 # Stubs — replace/expand later
 # -----------------------------
 
-def load_voice_notes(dir_path):
-    """
+  """
     TODO: load audio files + transcripts from disk.
     Return format suggestion: list[{"audio": <waveform>, "text": <str>}]
     """
     return []  # placeholder
 
 
-def extract_insights(dataset):
-    """
-    TODO: build 'wisdom embeddings' from transcripts.
-    For now, return an empty dict.
-    """
-    return {}
+def load_voice_notes(voice_notes_dir):
+    """Load WhatsApp voice notes (.opus/.ogg/.wav/.m4a), resample to 16kHz, normalize safely."""
+    import os
+    from collections import defaultdict
 
+    dataset = []
+    resampler_cache = defaultdict(lambda: None)  # reuse resampler per original sr
 
-def train_on_dataset(model, processor, dataset):
-    """
-    TODO: implement real training.
-    For now, return a dummy scalar loss so the loop runs.
-    """
-    return torch.tensor(0.1, dtype=torch.float32)
+    for filename in os.listdir(voice_notes_dir):
+        if filename.lower().endswith(('.opus', '.ogg', '.wav', '.m4a')):
+            filepath = os.path.join(voice_notes_dir, filename)
+            try:
+                waveform, sr = torchaudio.load(filepath)
+                
+                # Force 2D shape: [channels, samples]
+                if waveform.dim() == 1:
+                    waveform = waveform.unsqueeze(0)  # mono → [1, samples]
 
+                # Resample only if needed, cache resampler
+                if sr != 16000:
+                    if resampler_cache[sr] is None:
+                        resampler_cache[sr] = T.Resample(sr, 16000)
+                    waveform = resampler_cache[sr](waveform)
+
+                # Safe normalization: avoid div-by-zero
+                max_abs = waveform.abs().max()
+                if max_abs > 0:
+                    waveform = waveform / max_abs
+                else:
+                    print(f"[WARN] Zero-signal file skipped normalization: {filename}")
+
+                dataset.append({
+                    'path': filepath,
+                    'waveform': waveform,
+                    'sample_rate': 16000,
+                    'text': None
+                })
+                print(f"[LOAD OK] {filename} — shape {waveform.shape} @ 16kHz")
+            except Exception as e:
+                print(f"[LOAD FAIL] {filename}: {e}")
+
+    print(f"[SUMMARY] Loaded {len(dataset)} voice notes")
+    return dataset
 
 def save_checkpoint(model, path: str | None = None):
     """
