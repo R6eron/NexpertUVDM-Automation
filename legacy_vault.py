@@ -1,6 +1,12 @@
 # legacy_vault.py - Ronism #LegacyVault core
 # Full voice-clone evolution cycle: Genesis → Markup (Reptile) → Distribution
 
+import torchaudio
+import torchaudio.transforms as T
+try:
+    import pyttsx3
+except ImportError:
+    pyttsx3 = None
 import torch
 import torch.nn as nn
 import torch.optim as optim
