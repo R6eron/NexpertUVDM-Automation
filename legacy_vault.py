@@ -18,7 +18,65 @@ import torchaudio
 import torchaudio.transforms as T
 from transformers import Wav2Vec2Processor, HubertForCTC
 
+def load_voice_notes(voice_notes_dir: str):
+    """
+    Load WhatsApp voice notes (.opus, .ogg, .m4a, .wav),
+    resample to 16 kHz, normalize safely. Force mono.
+    """
+    dataset = []
+    resampler_cache = {}
 
+    if not os.path.isdir(voice_notes_dir):
+        print(f"[ERROR] Voice notes dir does not exist: {voice_notes_dir}")
+        return dataset
+
+    target_sr = 16000
+
+    for filename in os.listdir(voice_notes_dir):
+        if not filename.lower().endswith(('.opus', '.ogg', '.m4a', '.wav')):
+            continue
+
+        filepath = os.path.join(voice_notes_dir, filename)
+        
+        try:
+            waveform, sr = torchaudio.load(filepath)
+            
+            # Force mono [1, time]
+            if waveform.dim() == 1:
+                waveform = waveform.unsqueeze(0)
+            elif waveform.shape[0] > 1:
+                waveform = waveform.mean(dim=0, keepdim=True)
+            
+            # Resample with cache
+            if sr != target_sr:
+                if sr not in resampler_cache:
+                    resampler_cache[sr] = torchaudio.transforms.Resample(
+                        orig_freq=sr, new_freq=target_sr
+                    )
+                waveform = resampler_cache[sr](waveform)
+                sr = target_sr
+            
+            # Normalize safely
+            max_abs = torch.max(torch.abs(waveform))
+            if max_abs > 0:
+                waveform = waveform / max_abs
+            else:
+                print(f"[WARN] Silent file skipped norm: {filename}")
+            
+            dataset.append({
+                "path": filepath,
+                "waveform": waveform,
+                "sample_rate": sr,
+                "text": None  # transcription placeholder
+            })
+            print(f"[OK] {filename} shape={waveform.shape}")
+            
+        except Exception as e:
+            print(f"[ERROR] Load failed {filename}: {e}")
+            continue
+
+    print(f"[INFO] Loaded {len(dataset)} voice notes.")
+    return dataset
 # ============================================================
 #  Audio I/O and basic feature extraction
 # ============================================================
