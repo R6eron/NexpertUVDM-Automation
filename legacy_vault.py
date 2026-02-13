@@ -1,4 +1,16 @@
 """
+legacy_vault.py - Ronism #LegacyVault core
+"""
+
+import os
+from collections import defaultdict
+
+import torch
+import torch.nn as nn
+import torch.optim as optim
+import torchaudio
+import torchaudio.transforms as T
+from transformers import Wav2Vec2Processor, HubertForCTC  # ← ADD THIS LINE"""
 legacy_vault.py
 Ronism #LegacyVault core
 
