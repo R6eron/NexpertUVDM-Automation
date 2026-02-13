@@ -1,0 +1,107 @@
+os
+from collections import defaultdict
+
+import torch
+import torchaudio
+import torchaudio.transforms as T
+
+
+def load_voice_notes(voice_notes_dir: str):
+    """
+    Load WhatsApp voice notes (.opus/.ogg/.wav/.m4a), resample to 16 kHz, normalize safely.
+
+    Returns:
+        list[dict]: Each entry has keys:
+            - 'path': str
+            - 'waveform': torch.Tensor [channels, time]
+            - 'sample_rate': int (16_000)
+            - 'text': None | str
+    """
+    dataset: list[dict] = []
+    resampler_cache = defaultdict(lambda: None)
+
+    if not os.path.isdir(voice_notes_dir):
+        print(f"[ERROR] Voice notes dir does not exist: {voice_notes_dir}")
+        return dataset
+
+    for filename in os.listdir(voice_notes_dir):
+        if not filename.lower().endswith((".opus", ".ogg", ".wav", ".m4a")):
+            continue
+
+        filepath = os.path.join(voice_notes_dir, filename)
+
+        try:
+            waveform, sr = torchaudio.load(filepath)
+
+            # Ensure waveform is [channels, time]
+            if waveform.dim() == 1:
+                waveform = waveform.unsqueeze(0)
+
+            # Resample if needed
+            target_sr = 16000
+            if sr != target_sr:
+                if resampler_cache[sr] is None:
+                    resampler_cache[sr] = T.Resample(orig_freq=sr, new_freq=target_sr)
+                waveform = resampler_cache[sr](waveform)
+            else:
+                target_sr = sr
+
+            # Safe normalization
+            max_abs = waveform.abs().max()
+            if max_abs > 0:
+                waveform = waveform / max_abs
+            else:
+                print(f"[WARN] Zero-signal file, skipped normalization: {filename}")
+
+            dataset.append(
+                {
+                    "path": filepath,
+                    "waveform": waveform,
+                    "sample_rate": target_sr,
+                    "text": None,
+                }
+            )
+            print(f"[LOAD OK] {filename} — shape {tuple(waveform.shape)} @ {target_sr} Hz")
+
+        except Exception as e:
+            print(f"[LOAD FAIL] {filename}: {e}")
+
+    print(f"[SUMMARY] Loaded {len(dataset)} voice notes from {voice_notes_dir}")
+    return dataset
+
+
+def extract_insights(dataset: list[dict]):
+    """
+    Extract simple audio features from loaded waveforms.
+
+    Returns:
+        dict[path] -> feature dict
+    """
+    wisdom: dict[str, dict] = {}
+
+    for entry in dataset:
+        waveform: torch.Tensor = entry["waveform"]
+        sr: int = entry["sample_rate"]
+
+        if waveform.dim() != 2:
+            # Expect [channels, time]; skip malformed entries
+            print(f"[INSIGHTS WARN] Unexpected waveform shape {waveform.shape} for {entry['path']}")
+            continue
+
+        num_channels, num_samples = waveform.shape
+        dur_sec = num_samples / float(sr)
+
+        # Power and RMS (with small epsilon)
+        power = waveform.pow(2).mean().item()
+        rms = torch.sqrt(waveform.pow(2).mean() + 1e-12).item()
+
+        wisdom[entry["path"]] = {
+            "duration_sec": round(dur_sec, 2),
+            "avg_energy": round(power, 6),
+            "rms": round(rms, 6),
+            "channels": num_channels,
+            "text": entry.get("text"),  # placeholder for future transcription
+        }
+
+    print(f"[INSIGHTS] Extracted features for {len(wisdom)} files")
+    return wisdom
