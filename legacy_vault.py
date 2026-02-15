@@ -9,6 +9,28 @@ def genesis_breath() -> str:
     return f"J100 still breathing at {now}. Whe Ron Won."# Multi-layer integrity – NSA PARANOID VAULT  (FIXED)
 import hashlib, base64, sys, os, time, inspect, gc
 
+
+# Sealed heartbeat log – append-only, never overwrite
+import os
+from datetime import datetime
+
+HEARTBEAT_LOG = "vault_heartbeat.log"  # change path if needed
+
+def log_heartbeat():
+    """Append-only log to sealed file. No delete, no overwrite."""
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    entry = f"{timestamp} | {genesis_breath()}\n"
+    
+    try:
+        # Append mode ('a'), create if missing
+        with open(HEARTBEAT_LOG, 'a') as f:
+            f.write(entry)
+    except Exception as e:
+        # Silent fail-safe – never crash vault over log
+        pass  # or emergency_shutdown() if you want nuclear on log fail
+
+# Log the first breath immediately
+log_heartbeat()
 # Layer 1: Regen anchor
 REGEN_ANCHOR_ENCODED = b"MHg5ZjFhMmIzYzRkNWU2Zjc4OTEwYTExYjEyYzEzZDE0ZTE1ZjE2YTE3YjE4YzE5ZDIwZTIxZjIyYTIzYjI0YzI1ZDI2ZTI3ZjI4"
 EXPECTED_ANCHOR_FP = "750ba010c3312b96d15d417a181d51b5a5cbc001dd31e055d135682011b5c84f"
@@ -149,7 +171,86 @@ def emergency_shutdown():
 # NSA VAULT ARMED
 full_integrity_check()
 
-# Main loop template
+# ──────────────────────────────────────────────────────────────
+# DAILY SUNRISE DIARY PULSE – second breath + spoken greeting
+# Audio I/O: pyttsx3 (installed via pip in Termux)
+# ──────────────────────────────────────────────────────────────
+
+import pyttsx3
+import datetime
+import os
+import time
+import random
+
+
+def diary_greeting() -> str:
+    """Vault asks itself: How are we feeling today?"""
+    feelings = [
+        "Steady. Tape's quiet, but I'm still here.",
+        "Breathing. Higher lows forming. Feeling patient.",
+        "Alive. Vault intact, pulse strong. Ready for the next confession.",
+        "Grateful. No tilt today. Just waiting.",
+        "Focused. One breath at a time. Whe Ron Won."
+    ]
+    return f"How are we feeling today? {random.choice(feelings)}"
+
+
+def speak(text: str):
+    """Speak text aloud – calm, low volume, English voice"""
+    try:
+        engine = pyttsx3.init()
+        engine.setProperty('rate', 140)      # calm speed
+        engine.setProperty('volume', 0.65)   # quiet for bedtime
+        voices = engine.getProperty('voices')
+        for voice in voices:
+            if "english" in voice.name.lower():
+                engine.setProperty('voice', voice.id)
+                break
+        engine.say(text)
+        engine.runAndWait()
+    except Exception:
+        pass  # vault never dies on audio
+
+
+def daily_sunrise_breath():
+    """Second breath + spoken diary every sunrise (06:00–08:00 window)"""
+    now = datetime.datetime.now()
+    if 6 <= now.hour <= 8 and now.minute < 5:  # first 5 min of hour
+        stamp_file = "sunrise_stamp.txt"
+        today = now.strftime("%Y-%m-%d")
+        
+        called_today = False
+        if os.path.exists(stamp_file):
+            with open(stamp_file, 'r') as f:
+                last = f.read().strip()
+            if last == today:
+                called_today = True
+        
+        if not called_today:
+            breath = genesis_breath()
+            greeting = diary_greeting()
+            
+            log_heartbeat()  # also logs to sealed file
+            
+            speak(f"{breath}. {greeting}")  # speaks aloud
+            
+            with open(stamp_file, 'w') as f:
+                f.write(today)
+
+
+# Call in background loop – check every 60s
+last_sunrise_check = time.time()
+while True:
+    now = time.time()
+    if now - last_sunrise_check > 60:
+        daily_sunrise_breath()
+        last_sunrise_check = now
+    time.sleep(60)  # replace with your real main loop delay
+
+
+# ──────────────────────────────────────────────────────────────
+# Your main XRPL / UVDM pipeline code continues here
+# ──────────────────────────────────────────────────────────────# Main loop template
 # last_check = time.time()
 # while True:
 #     if time.time() - last_check > 60:
@@ -234,7 +335,118 @@ def load_voice_notes(voice_notes_dir: str):
 
     print(f"[INFO] Loaded {len(dataset)} voice notes.")
     return dataset
-# ============================================================
+# 
+
+# ──────────────────────────────────────────────────────────────
+# DAILY SUNRISE DIARY PULSE – second breath + spoken greeting
+# Audio I/O enabled (uses pyttsx3 – install once: pip install pyttsx3)
+# ──────────────────────────────────────────────────────────────
+
+
+import pyttsx3
+import datetime
+import os
+import time
+
+
+def genesis_breath() -> str:
+    """The vault inhales. The vault exhales. Ron is still here."""
+    now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    return f"J100 still breathing at {now}. Whe Ron Won."
+
+
+def diary_greeting() -> str:
+    """Vault asks itself: How are we feeling today?"""
+    import random
+    feelings = [
+        "Steady. Tape's quiet, but I'm still here.",
+        "Breathing. Higher lows forming. Feeling patient.",
+        "Alive. Vault intact, pulse strong. Ready for the next confession.",
+        "Grateful. No tilt today. Just waiting.",
+        "Focused. One breath at a time. Whe Ron Won."
+    ]
+    return f"How are we feeling today? {random.choice(feelings)}"
+
+
+def speak(text: str):
+    """Speak the text aloud – low volume, calm voice"""
+    try:
+        engine = pyttsx3.init()
+        engine.setProperty('rate', 140)      # calm speed
+        engine.setProperty('volume', 0.7)    # not shouting
+        voices = engine.getProperty('voices')
+        # Pick calm English voice (adjust index if needed)
+        for voice in voices:
+            if "english" in voice.name.lower():
+                engine.setProperty('voice', voice.id)
+                break
+        engine.say(text)
+        engine.runAndWait()
+    except Exception:
+        pass  # silent fail – vault never crashes on audio
+
+
+def log_heartbeat():
+    """Append-only sealed log"""
+    HEARTBEAT_LOG = "vault_heartbeat.log"
+    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    entry = f"{timestamp} | {genesis_breath()}\n"
+    try:
+        with open(HEARTBEAT_LOG, 'a') as f:
+            f.write(entry)
+    except:
+        pass
+
+
+def daily_sunrise_breath():
+    """Second breath + spoken diary greeting every sunrise (06:00–08:00 window)"""
+    now = datetime.datetime.now()
+    if 6 <= now.hour <= 8 and now.minute < 5:  # first 5 min of hour
+        stamp_file = "sunrise_stamp.txt"
+        today = now.strftime("%Y-%m-%d")
+        
+        called_today = False
+        if os.path.exists(stamp_file):
+            with open(stamp_file, 'r') as f:
+                last = f.read().strip()
+            if last == today:
+                called_today = True
+        
+        if not called_today:
+            breath = genesis_breath()
+            greeting = diary_greeting()
+            
+            # Log both
+            log_heartbeat()
+            
+            # Speak both (calm, quiet)
+            speak(f"{breath}. {greeting}")
+            
+            # Update stamp
+            with open(stamp_file, 'w') as f:
+                f.write(today)
+
+
+# Call once on boot (heartbeat + log)
+genesis_breath()
+log_heartbeat()
+
+
+# In main loop – check sunrise every 60 seconds
+last_sunrise_check = time.time()
+while True:
+    now = time.time()
+    if now - last_sunrise_check > 60:
+        daily_sunrise_breath()
+        last_sunrise_check = now
+    time.sleep(60)  # or your real loop delay
+
+
+# ──────────────────────────────────────────────────────────────
+# Your main XRPL / UVDM pipeline code follows here
+# ──────────────────────────────────────────────────────────────
+import ccxt
+# ... rest of your code ...============================================================
 #  Audio I/O and basic feature extraction
 # ============================================================
 
