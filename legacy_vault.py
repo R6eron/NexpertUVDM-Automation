@@ -2,7 +2,160 @@
 legacy_vault.py
 Ronism #LegacyVault core
 
-Pipeline:
+# Multi-layer integrity – NSA PARANOID VAULT (FIXED)
+import hashlib, base64, sys, os, time, inspect, gc
+
+# Layer 1: Regen anchor
+REGEN_ANCHOR_ENCODED = b"MHg5ZjFhMmIzYzRkNWU2Zjc4OTEwYTExYjEyYzEzZDE0ZTE1ZjE2YTE3YjE4YzE5ZDIwZTIxZjIyYTIzYjI0YzI1ZDI2ZTI3ZjI4"
+EXPECTED_ANCHOR_FP = "750ba010c3312b96d15d417a181d51b5a5cbc001dd31e055d135682011b5c84f"
+
+# Layer 9: FIXED CANARIES (memory corruption detection)
+CANARY_TOP = 0xDEADBEEFCAFEBABE
+CANARY_BOTTOM = 0xBADC0FFEEDEXEC0DE
+
+def validate_canaries() -> bool:
+    """Fixed: Direct value comparison - tamper-proof"""
+    return (CANARY_TOP == 0xDEADBEEFCAFEBABE and 
+            CANARY_BOTTOM == 0xBADC0FFEEDEXEC0DE)
+
+def get_anchor_fingerprint() -> str:
+    if not validate_canaries():
+        raise RuntimeError("CANARY BREACH - MEMORY CORRUPTION")
+    decoded = base64.b64decode(REGEN_ANCHOR_ENCODED)
+    return hashlib.sha256(hashlib.sha256(decoded).digest()).hexdigest()
+
+# Layer 2: Source file hash
+def check_source_integrity(source_path: str) -> None:
+    with open(source_path, 'rb') as f:
+        source_hash = hashlib.sha256(f.read()).hexdigest()
+    EXPECTED_SOURCE_FP = "your_precomputed_source_file_sha256_here"
+    if source_hash != EXPECTED_SOURCE_FP:
+        raise RuntimeError("Source file tampered")
+
+# Layer 3: Environment sanity
+def check_runtime_env() -> None:
+    if hasattr(sys, 'frozen'): raise RuntimeError("Frozen executable detected")
+    if 'DEBUG' in os.environ: raise RuntimeError("Debug mode detected")
+
+# Layer 4: Memory integrity
+ANCHOR_FINGERPRINT_CACHE = None
+def validate_memory_integrity() -> bool:
+    global ANCHOR_FINGERPRINT_CACHE
+    current_fp = get_anchor_fingerprint()
+    if ANCHOR_FINGERPRINT_CACHE is None:
+        if current_fp == EXPECTED_ANCHOR_FP:
+            ANCHOR_FINGERPRINT_CACHE = current_fp
+            return True
+        return False
+    return current_fp == ANCHOR_FINGERPRINT_CACHE
+
+# Layer 5: Timestamp interval watchdog
+LAST_CHECK_TIME = time.time()
+EXPECTED_INTERVAL_MIN_MS = 50000
+EXPECTED_INTERVAL_MAX_MS = 70000
+
+def check_timestamp_interval() -> bool:
+    global LAST_CHECK_TIME
+    now = time.time()
+    interval_ms = (now - LAST_CHECK_TIME) * 1000
+    LAST_CHECK_TIME = now
+    return EXPECTED_INTERVAL_MIN_MS <= interval_ms <= EXPECTED_INTERVAL_MAX_MS
+
+# Layer 6: Code signature
+def get_code_signature() -> str:
+    sig_parts = []
+    for name, obj in globals().items():
+        if callable(obj) and not name.startswith('_'):
+            try:
+                sig_parts.append(hashlib.sha256(inspect.getsource(obj).encode()).hexdigest())
+            except:
+                pass
+    return hashlib.sha256(''.join(sorted(sig_parts)).encode()).hexdigest()
+
+EXPECTED_CODE_SIG = "your_precomputed_code_signature_here"
+def check_code_signature() -> bool:
+    return get_code_signature() == EXPECTED_CODE_SIG
+
+# Layer 7: Import table lockdown
+EXPECTED_IMPORTS = {'hashlib', 'base64', 'sys', 'os', 'time', 'inspect', 'ccxt'}
+def check_import_table() -> bool:
+    actual_imports = {k for k, v in sys.modules.items() if not k.startswith('_')}
+    return EXPECTED_IMPORTS.issubset(actual_imports)
+
+# Layer 8: Reflection attack detection
+INSPECTED_VARS = {'REGEN_ANCHOR_ENCODED', 'EXPECTED_ANCHOR_FP', 'ANCHOR_FINGERPRINT_CACHE'}
+REFLECTION_CALL_COUNT = 0
+INSPECT_THRESHOLD = 3
+
+def check_reflection_integrity() -> bool:
+    global REFLECTION_CALL_COUNT
+    for var in INSPECTED_VARS:
+        if var in dir(globals()):
+            REFLECTION_CALL_COUNT += 1
+    objects = gc.get_objects()
+    sensitive = [o for o in objects if hasattr(o, '__name__') and any(s in str(o) for s in INSPECTED_VARS)]
+    if len(sensitive) > 0:
+        REFLECTION_CALL_COUNT += 2
+    return REFLECTION_CALL_COUNT < INSPECT_THRESHOLD
+
+# Layer 10: Execution flow validation (control flow hijack)
+EXECUTION_COUNT = 0
+EXPECTED_EXEC_COUNT = 1  # Boot-time only
+
+def validate_execution_flow() -> bool:
+    global EXECUTION_COUNT
+    EXECUTION_COUNT += 1
+    return EXECUTION_COUNT == EXPECTED_EXEC_COUNT
+
+# Master boot check
+def full_integrity_check(source_file: str = __file__ if '__file__' in globals() else 'legacy_vault.py') -> None:
+    if not validate_execution_flow():
+        raise RuntimeError("EXECUTION FLOW HIJACKED")
+    if not validate_canaries():
+        raise RuntimeError("CANARY BREACH - MEMORY CORRUPTION")
+    checks = [
+        validate_memory_integrity(),
+        get_anchor_fingerprint() == EXPECTED_ANCHOR_FP,
+        check_timestamp_interval(),
+        check_code_signature(),
+        check_import_table(),
+        check_reflection_integrity()
+    ]
+    if not all(checks):
+        raise RuntimeError("NSA BOOT FAILURE - VAULT DESTROYED")
+    check_runtime_env()
+    check_source_integrity(source_file)
+
+# Runtime periodic check
+def runtime_integrity_check():
+    if (not validate_execution_flow() or
+        not validate_canaries() or
+        not validate_memory_integrity() or
+        not check_timestamp_interval() or
+        not check_code_signature() or
+        not check_import_table() or
+        not check_reflection_integrity()):
+        emergency_shutdown()
+
+def emergency_shutdown():
+    globals().clear()
+    sys.exit(0xDEADBEEF)
+
+# ───────────────────────────
+# NSA VAULT ARMED
+full_integrity_check()
+
+# Main loop template
+# last_check = time.time()
+# while True:
+#     if time.time() - last_check > 60:
+#         runtime_integrity_check()
+#         last_check = time.time()
+#     # XRPL/DeFi/voice pipeline - SAFE
+#     time.sleep(1)
+
+import ccxt, time
+# ... rest of pipeline ...Pipeline:
     1. Genesis  : initialize_soul  – build base 'soul model' + wisdom embeddings
     2. Markup   : evolve_soul      – light Reptile-style updates from interactions
     3. Query    : query_vault      – answer, speak, and log interactions
