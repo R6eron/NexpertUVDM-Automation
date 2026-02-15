@@ -2,8 +2,11 @@
 legacy_vault.py
 Ronism #LegacyVault core
 
-def genesis_breath() -> str:
-    """The vault inhales. The vault exhales. Ron is still here."""
+git add legacy_vault.py
+git commit -m "fix: import time at top, vault boots clean, pulse logged"
+git push
+def genesis_breath() -> str:   """The vault 
+inhales. The vault exhales. Ron is still here."""
     import datetime
     now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     return f"J100 still breathing at {now}. Whe Ron Won."# Multi-layer integrity – NSA PARANOID VAULT  (FIXED)
