@@ -1,3 +1,6 @@
+
+Regen with Hash: Paste it here – "0x9f1a2b3c4d5e6f78910a11b12c13d14e15f16a17b18c19d20e21f22a23b24c25d26e27f28".
+
 **Current stage:** Neon 211kb ghost → full Wingman enforcer (hooded green-eyed angel, candle + heart, demon crusher, service parade).  
 **Folder:** Create `/visuals/` at repo root (next to LICENSE, README.md, jesse100_wingman.py).  
 **File naming convention:**  
