@@ -1,5 +1,8 @@
-# legacy_vault.py – Ultimate Production Beast (Voice Legacy + Market Truth)
-# All improvements integrated: real MEXC klines, file logging, Telegram alerts, sniper flag, error push
+#!/usr/bin/env python3
+"""
+Legacy Vault – Voice Legacy + Market Truth
+FTSO oracle + MEXC klines + OpenAI Whisper + Immutable Artifacts
+"""
 
 import os
 import datetime
@@ -11,19 +14,26 @@ import requests
 from pathlib import Path
 from typing import List, Optional
 from dataclasses import dataclass
+
+from dotenv import load_dotenv
 from web3 import Web3
+import openai
 
 # ────────────────────────────────────────────────
-# CONFIG – FILL THESE ONCE
+# CONFIG – ENV-DRIVEN (NO SECRETS IN CODE)
 # ────────────────────────────────────────────────
-TELEGRAM_BOT_TOKEN = "YOUR_BOT_TOKEN_HERE"  # from BotFather
-TELEGRAM_CHAT_ID = "YOUR_CHAT_ID_HERE"      # your user/group ID
+load_dotenv()
+
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+if not OPENAI_API_KEY:
+    raise RuntimeError("OPENAI_API_KEY not set in environment (.env)")
+
 DAILY_LOG_FILE = "daily_price_diary.log"
 PREV_LOWS_FILE = "prev_lows.json"
-SNIPER_THRESHOLD = 0.160  # XLM < this → flag & alert
+SNIPER_THRESHOLD = 0.160  # XLM < this → flag
 
 # Flare FTSO v2 – primary oracle
-FLARE_RPC = "https://flare-api.flare.network/ext/C/rpc"
+FLARE_RPC = os.getenv("FLARE_RPC", "https://flare-api.flare.network/ext/C/rpc")
 FTSO_V2_ADDRESS = "0x787C2AbB211dbC5F9B239288701a3dd5ae3Af1A2"
 
 FTSO_ABI = [
@@ -62,16 +72,7 @@ else:
 w3 = Web3(Web3.HTTPProvider(FLARE_RPC))
 ftso = w3.eth.contract(address=FTSO_V2_ADDRESS, abi=FTSO_ABI)
 
-def send_telegram_message(msg: str):
-    if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
-        print("Telegram config missing – skipping alert")
-        return
-    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
-    payload = {"chat_id": TELEGRAM_CHAT_ID, "text": msg, "parse_mode": "Markdown"}
-    try:
-        requests.post(url, json=payload, timeout=5)
-    except Exception as e:
-        print(f"Telegram send fail: {e}")
+openai.api_key = OPENAI_API_KEY
 
 def log_diary_entry(text: str):
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -89,22 +90,21 @@ def get_ftso_price(feed_hex: str) -> Optional[float]:
         return None
 
 def get_mexc_klines(symbol: str) -> dict:
-    """Fetch last 24h data via Day1 kline (public, no auth)"""
     try:
         url = "https://api.mexc.com/api/v3/klines"
         params = {"symbol": f"{symbol}USDT", "interval": "1d", "limit": 1}
         resp = requests.get(url, params=params, timeout=8).json()
         if not resp or not isinstance(resp, list) or len(resp) == 0:
             return {}
-        k = resp[0]  # [open_time, open, high, low, close, volume, ...]
+        k = resp[0]
         return {
             "high": float(k[2]),
             "low": float(k[3]),
-            "volume": float(k[5]),  # base asset volume
+            "volume": float(k[5]),
             "close": float(k[4])
         }
     except Exception as e:
-        print(f"MEXC klines fail for {symbol}: {e}")
+        print(f"MEXC klines fail: {e}")
         return {}
 
 def detect_low_change(sym: str, curr_low: float) -> str:
@@ -127,7 +127,6 @@ def refresh_prices():
     timestamp = datetime.datetime.now().strftime('%B %d, %Y %H:%M')
     diary = f"#Jesse ON {timestamp}\n#DigitalAssetDiary\n\n"
 
-    alerts = []
     for sym, fid in FEED_IDS.items():
         p_ftso = get_ftso_price(fid)
         klines = get_mexc_klines(sym)
@@ -136,7 +135,6 @@ def refresh_prices():
 
         if price is None:
             diary += f"**{sym}** — no price\n---\n"
-            alerts.append(f"CRITICAL: {sym} both sources failed")
             continue
 
         high24 = klines.get("high", price * 1.05)
@@ -149,26 +147,11 @@ def refresh_prices():
         line = f"**{sym}**\n  ${price:.6f}  ({src})\n  Vol 24h: ${vol24 if vol24 == 'N/A' else f'{vol24:,.0f}'}\n  Range: {rng}  ({low24:.6f} – {high24:.6f})\n  Low: {low_stat}\n---\n"
         diary += line
 
-        # Alerts
-        if "higher low ✅" in low_stat:
-            alerts.append(f"ALERT: {sym} higher low ✅ – momentum shift?")
-        if isinstance(vol24, float) and vol24 > 5 * (PREV_LOWS.get(sym + "_vol", 0) or 1):  # rough spike detect
-            alerts.append(f"ALERT: {sym} big vol push detected")
-        PREV_LOWS[sym + "_vol"] = vol24 if isinstance(vol24, float) else 0  # update for next
-
-        if sym == 'XLM' and price < SNIPER_THRESHOLD:
-            alerts.append(f"SNIPER ZONE APPROACHING: XLM ${price:.6f} < {SNIPER_THRESHOLD}")
-
     diary += "\n**Sniper** XLM @0.158 untouched – pyramid waits\n"
     diary += "Wingman awake. Family first. Compound quiet. 🚀\n"
 
-    # Log & alert
     log_diary_entry(diary)
-    for alert in alerts:
-        send_telegram_message(alert)
-        log_diary_entry(f"ALERT: {alert}")
-
-    print(diary)  # console for immediate view
+    print(diary)
 
 # ────────────────────────────────────────────────
 # LEGACY VAULT CORE
@@ -185,10 +168,10 @@ class VoiceArtifact:
 
 class LegacyVault:
     def __init__(self, repo_path: str, family_members: List[str]):
-        self.repo_path: Path = Path(repo_path).resolve()
-        self.family: List[str] = family_members
-        self.voice_notes_dir: Path = self.repo_path / "voice_notes"
-        self.artifacts_dir: Path = self.repo_path / "immutable_artifacts"
+        self.repo_path = Path(repo_path).resolve()
+        self.family = family_members
+        self.voice_notes_dir = self.repo_path / "voice_notes"
+        self.artifacts_dir = self.repo_path / "immutable_artifacts"
         self._ensure_dirs()
 
     def __repr__(self) -> str:
@@ -245,7 +228,19 @@ class LegacyVault:
             raise
 
     def _transcribe(self, file_path: Path) -> str:
-        return f"Transcribed from {file_path.name}: wins, regrets, humor, scars..."
+        """Real OpenAI Whisper transcription"""
+        try:
+            with open(file_path, "rb") as audio_file:
+                transcript = openai.Audio.transcribe(
+                    model="whisper-1",
+                    file=audio_file,
+                    language="en",
+                    response_format="text"
+                )
+            return transcript
+        except Exception as e:
+            print(f"Whisper error: {e}")
+            return "Transcription failed – manual entry needed"
 
     def _tokenize_essence(self, text: str) -> List[str]:
         words = [w.strip() for w in text.split() if w.strip()]
@@ -255,18 +250,11 @@ class LegacyVault:
         return hashlib.sha256(data.encode('utf-8')).hexdigest()
 
     def _save_artifact(self, path: Path, artifact: VoiceArtifact) -> None:
-        data = {
-            "date": artifact.date,
-            "family": artifact.family,
-            "transcription": artifact.transcription,
-            "tokens": artifact.tokens,
-            "source_file": artifact.source_file,
-            "hash": artifact.hash
-        }
+        data = artifact.__dict__
         path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding='utf-8')
 
     def _feed_twin(self, artifact: VoiceArtifact) -> None:
-        print(f"🧠 Feeding twin: {artifact.date} – {len(artifact.tokens)} tokens ingested")
+        print(f"Feeding twin: {artifact.date} – {len(artifact.tokens)} tokens")
 
     def list_artifacts(self, date_range: Optional[tuple[datetime.date, datetime.date]] = None) -> List[Path]:
         artifacts = list(self.artifacts_dir.glob("artifact_*.json"))
@@ -286,7 +274,7 @@ class LegacyVault:
         return None
 
     def run_daily(self) -> None:
-        refresh_prices()  # auto diary + alerts on every cron run
+        refresh_prices()  # auto diary on cron run
         
         new_files = list(self.voice_notes_dir.glob("*.m4a")) + \
                     list(self.voice_notes_dir.glob("*.ogg")) + \
@@ -295,7 +283,7 @@ class LegacyVault:
             try:
                 self.ingest_voice_note(file_path)
             except Exception as e:
-                print(f"⚠️ Skipped {file_path.name}: {e}")
+                print(f"Skipped {file_path.name}: {e}")
 
 # Example usage
 if __name__ == "__main__":
