@@ -30,15 +30,17 @@ UVDM turns idle capital into 60%+ yield via virtuous cycles (Nexo → MEXC → B
 
 Executable Python scripts + breakdowns for easy deployment.
 
-**Core Principles**
-- Tape truth
-- Refuse waste
-- Process over outcome
-- Let it come
-- Scale on evidence
-- Quiet pride
-- The Miracle is Us
-- When Ron Won
+cycles (Nexo→MEXC→Bifrost/Flare). No tilt. No human error.
+
+## Core Principles
+- **Tape truth**
+- **Refuse waste**
+- **Process over outcome**
+- **Let it come**
+- **Scale on evidence**
+- **Quiet pride**
+- **The Miracle is Us**
+- **When Ron Won**
 # R6eron Automation Suite - Immortal Edition - Jesse100 Wingman Core
 # Retrains hourly on new data - no revocation, dynamic strategies
 
