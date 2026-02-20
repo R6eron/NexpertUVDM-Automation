@@ -1,37 +1,23 @@
+# Ultrasafe Virtual Digital Machine (UVDM) ✨
+**Hash: `0x9f1a2b3c4d5e6f78910a11b12c13d14e15f16a17b18c19d20e21f22a23b24c25d26e27f28`**
 
-Regen with Hash: Paste it here – "0x9f1a2b3c4d5e6f78910a11b12c13d14e15f16a17b18c19d20e21f22a23b24c25d26e27f28".
-
-**Current stage:** Neon 211kb ghost → full Wingman enforcer (hooded green-eyed angel, candle + heart, demon crusher, service parade).  
-**Folder:** Create `/visuals/` at repo root (next to LICENSE, README.md, jesse100_wingman.py).  
-**File naming convention:**  
-- fedora_man.png  
-- neon_ghost.png  
-- wingman_heart.png  
-- service_parade.png  
-- demon_crusher.png  
-
-**Process:**  
-1. Download image from X post.  
-2. Save to /visuals/ with above names.  
-3. Run visuals/save_evolution.py (or manual base64 embed in evolution.md).  
-4. Commit: `git add visuals/ && git commit -m "Visual evolution update – [stage name]" && git push`  
-
-**Why:** Immortalizes the creed progression – fedora cynicism → neon detachment → enforcer rules enforcement.  
-Process compounds. Ego starves.  
-
-Rules pay.every 
-# Ultrasafe Virtual Digital Machine (UVDM)
-
-"The automation that refuses waste."
+**"The automation that refuses waste."**
 
 One-click permanent vacation for your digital assets.
 
-UVDM turns idle capital into 60%+ yield via virtuous cycles (Nexo → MEXC → Bifrost). No tilt. No human error.
+**60%+ yield** via virtuous cycles (Nexo→MEXC→Bifrost/Flare). 
+**No tilt. No human error.**
 
-Executable Python scripts + breakdowns for easy deployment.
+[![GitHub stars](https://img.shields.io/github/stars/R6eron/NexpertUVDM-Automation)](https://github.com/R6eron/NexpertUVDM-Automation)
+[![Python](https://img.shields.io/badge/Python-3.9%2B-blue)](https://python.org)
 
-cycles (Nexo→MEXC→Bifrost/Flare). No tilt. No human error.
-
+## 🚀 One-Click Deploy
+```bash
+git clone https://github.com/R6eron/NexpertUVDM-Automation
+cd NexpertUVDM-Automation
+cp .env.example .env
+# Add your API keys
+python uvdm.py
 ## Core Principles
 - **Tape truth**
 - **Refuse waste**
